@@ -599,78 +599,56 @@
             height: 297mm;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(2, 85mm);
-            grid-template-rows: repeat(4, 55mm);
-            gap: 5mm 10mm;
-            padding: 11mm 10mm;
-            justify-content: center;
-            align-content: start;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 0;
+            padding: 0;
         }
 
         .print-card {
-            width: 85mm;
-            height: 55mm;
+            width: 105mm;
+            height: 74.25mm;
             font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
             color: #1c1917;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #e7e5e4;
-            border-radius: 3mm;
-        }
-
-        .print-card-left {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 38mm;
-            background: #f97316;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            border: 0.5px solid #e7e5e4;
             padding: 4mm;
+            box-sizing: border-box;
         }
 
-        .print-card-left h2 {
-            font-size: 1.1rem;
-            font-weight: 800;
+        .print-card-header {
+            background: #f97316;
             color: #fff;
+            width: 100%;
+            text-align: center;
+            padding: 2mm 0;
+            border-radius: 2mm;
+            margin-bottom: 3mm;
+        }
+
+        .print-card-header h3 {
+            font-size: 0.9rem;
+            font-weight: 800;
             margin: 0;
             letter-spacing: -0.02em;
-            line-height: 1.1;
         }
 
-        .print-card-left h2 span {
-            color: #fff;
-        }
-
-        .print-card-left p {
+        .print-card-header p {
             font-size: 0.5rem;
             color: rgba(255,255,255,0.8);
-            margin: 1mm 0 0;
+            margin: 0.5mm 0 0;
         }
 
-        .print-card-right {
-            position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 47mm;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4mm;
-        }
-
-        .print-card-right canvas {
+        .print-card canvas {
             margin-bottom: 2mm;
         }
 
-        .print-card-right .card-url {
+        .print-card .card-url {
             font-family: 'Courier New', monospace;
-            font-size: 0.45rem;
+            font-size: 0.55rem;
             color: #78716c;
             word-break: break-all;
             text-align: center;
@@ -842,85 +820,62 @@
 
         <!-- CARTE (x8 sur A4) -->
         <div class="print-cards-grid" id="printCard">
-            <div class="print-card" id="printCard0">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+            <div class="print-card">
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard0"></canvas>
-                    <div class="card-url" id="printUrlCard"></div>
-                </div>
+                <canvas id="printQrCard0"></canvas>
+                <div class="card-url" id="printUrlCard"></div>
             </div>
             <div class="print-card">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard1"></canvas>
-                    <div class="card-url"></div>
-                </div>
+                <canvas id="printQrCard1"></canvas>
             </div>
             <div class="print-card">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard2"></canvas>
-                    <div class="card-url"></div>
-                </div>
+                <canvas id="printQrCard2"></canvas>
             </div>
             <div class="print-card">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard3"></canvas>
-                    <div class="card-url"></div>
-                </div>
+                <canvas id="printQrCard3"></canvas>
             </div>
             <div class="print-card">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard4"></canvas>
-                    <div class="card-url"></div>
-                </div>
+                <canvas id="printQrCard4"></canvas>
             </div>
             <div class="print-card">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard5"></canvas>
-                    <div class="card-url"></div>
-                </div>
+                <canvas id="printQrCard5"></canvas>
             </div>
             <div class="print-card">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard6"></canvas>
-                    <div class="card-url"></div>
-                </div>
+                <canvas id="printQrCard6"></canvas>
             </div>
             <div class="print-card">
-                <div class="print-card-left">
-                    <h2>TeamCel</h2>
+                <div class="print-card-header">
+                    <h3>TeamCel</h3>
                     <p>chat anonyme</p>
                 </div>
-                <div class="print-card-right">
-                    <canvas id="printQrCard7"></canvas>
-                    <div class="card-url"></div>
-                </div>
+                <canvas id="printQrCard7"></canvas>
             </div>
         </div>
 
@@ -1102,13 +1057,12 @@
                 qrSize = 200;
             } else if (type === 'card') {
                 document.getElementById('printCard').style.display = 'grid';
-                // Generate same QR on all 8 canvases
                 var promises = [];
                 for (var i = 0; i < 8; i++) {
                     (function(idx) {
                         promises.push(
                             QRCode.toCanvas(document.getElementById('printQrCard' + idx), url, {
-                                width: 100, margin: 1,
+                                width: 180, margin: 1,
                                 color: { dark: '#1c1917', light: '#ffffff' }
                             })
                         );

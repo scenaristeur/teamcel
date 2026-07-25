@@ -1,7 +1,0 @@
-- generic [active] [ref=e1]:
-  - banner [ref=e2]:
-    - generic [ref=e3]: TeamCel
-    - generic [ref=e4]: test-bar
-  - generic [ref=e6]:
-    - textbox "Ecrire un message..." [ref=e7]
-    - button "Envoyer" [ref=e8] [cursor=pointer]: ▶

@@ -1,7 +1,0 @@
-[    1281ms] [LOG] Hello wonderful person! :) Thanks for using GUN, please ask for help on http://chat.gun.eco if anything takes you longer than 5min to figure out! @ https://cdn.jsdelivr.net/npm/gun/gun.js:541
-[    1788ms] [ERROR] WebSocket connection to 'wss://shogun-relay.scobrudot.dev/gun' failed: Error in connection establishment: net::ERR_CERT_AUTHORITY_INVALID @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754
-[    1821ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3456/favicon.ico:0
-[   51260ms] [LOG] Warning: You're syncing 1K+ records a second, faster than DOM can update - consider limiting query. @ https://cdn.jsdelivr.net/npm/gun/gun.js:438
-[  241447ms] [ERROR] WebSocket connection to 'wss://sudorecords.scobrudot.dev/gun' failed: WebSocket opening handshake timed out @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754
-[  241502ms] [ERROR] WebSocket connection to 'wss://shogun-relay.scobrudot.dev/gun' failed: Error in connection establishment: net::ERR_CERT_AUTHORITY_INVALID @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754
-[  483462ms] [ERROR] WebSocket connection to 'wss://sudorecords.scobrudot.dev/gun' failed: WebSocket opening handshake timed out @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754
