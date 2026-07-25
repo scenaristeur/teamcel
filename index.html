@@ -40,8 +40,8 @@
             font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
-            height: 100dvh;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -612,47 +612,71 @@
             color: #1c1917;
             display: flex;
             flex-direction: column;
+            border: 0.5px solid #e7e5e4;
+            box-sizing: border-box;
+            padding: 4mm 5mm 3mm;
+        }
+
+        .print-card-top {
+            display: flex;
+            flex: 1;
+            gap: 4mm;
+        }
+
+        .print-card-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .print-card-left h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #f97316;
+            margin: 0 0 1mm;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        .print-card-left h3 span {
+            color: #1c1917;
+        }
+
+        .print-card-steps {
+            font-size: 0.5rem;
+            line-height: 1.5;
+            color: #44403c;
+        }
+
+        .print-card-steps div {
+            display: flex;
+            gap: 1.5mm;
+        }
+
+        .print-card-steps strong {
+            color: #f97316;
+        }
+
+        .print-card-right {
+            display: flex;
             align-items: center;
             justify-content: center;
-            border: 0.5px solid #e7e5e4;
-            padding: 4mm;
-            box-sizing: border-box;
         }
 
-        .print-card-header {
-            background: #f97316;
-            color: #fff;
-            width: 100%;
+        .print-card-bottom {
+            border-top: 0.5px solid #e7e5e4;
+            padding-top: 2mm;
+            margin-top: 2mm;
             text-align: center;
-            padding: 2mm 0;
-            border-radius: 2mm;
-            margin-bottom: 3mm;
         }
 
-        .print-card-header h3 {
-            font-size: 0.9rem;
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -0.02em;
-        }
-
-        .print-card-header p {
-            font-size: 0.5rem;
-            color: rgba(255,255,255,0.8);
-            margin: 0.5mm 0 0;
-        }
-
-        .print-card canvas {
-            margin-bottom: 2mm;
-        }
-
-        .print-card .card-url {
+        .print-card-bottom .card-url {
             font-family: 'Courier New', monospace;
-            font-size: 0.55rem;
+            font-size: 0.48rem;
             color: #78716c;
             word-break: break-all;
-            text-align: center;
-            line-height: 1.3;
+            line-height: 1.2;
         }
 
         /* --- MINI (58mm thermique) --- */
@@ -819,65 +843,7 @@
         </div>
 
         <!-- CARTE (x8 sur A4) -->
-        <div class="print-cards-grid" id="printCard">
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard0"></canvas>
-                <div class="card-url" id="printUrlCard"></div>
-            </div>
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard1"></canvas>
-            </div>
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard2"></canvas>
-            </div>
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard3"></canvas>
-            </div>
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard4"></canvas>
-            </div>
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard5"></canvas>
-            </div>
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard6"></canvas>
-            </div>
-            <div class="print-card">
-                <div class="print-card-header">
-                    <h3>TeamCel</h3>
-                    <p>chat anonyme</p>
-                </div>
-                <canvas id="printQrCard7"></canvas>
-            </div>
-        </div>
+        <div class="print-cards-grid" id="printCard" style="display:none;"></div>
 
         <!-- MINI 58mm -->
         <div class="print-mini" id="printMini">
@@ -949,7 +915,9 @@
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('pseudoToast').style.display = 'none';
                 document.getElementById('flairBar').style.display = 'flex';
-                document.getElementById('msgInput').focus();
+                setTimeout(function() {
+                    document.getElementById('msgInput').focus();
+                }, 100);
             });
 
             document.getElementById('flairInput').addEventListener('change', function() {
@@ -1056,10 +1024,32 @@
                 targetId = 'printQrA4';
                 qrSize = 200;
             } else if (type === 'card') {
-                document.getElementById('printCard').style.display = 'grid';
+                var grid = document.getElementById('printCard');
+                grid.innerHTML = '';
+                grid.style.display = 'grid';
                 var promises = [];
                 for (var i = 0; i < 8; i++) {
                     (function(idx) {
+                        var card = document.createElement('div');
+                        card.className = 'print-card';
+                        card.innerHTML =
+                            '<div class="print-card-top">' +
+                                '<div class="print-card-left">' +
+                                    '<h3>Team<span>Cel</span></h3>' +
+                                    '<div class="print-card-steps">' +
+                                        '<div><strong>1.</strong> Scan le QR code</div>' +
+                                        '<div><strong>2.</strong> Pseudo automatique</div>' +
+                                        '<div><strong>3.</strong> Discute et rencontre</div>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="print-card-right">' +
+                                    '<canvas id="printQrCard' + idx + '"></canvas>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="print-card-bottom">' +
+                                '<div class="card-url">' + url + '</div>' +
+                            '</div>';
+                        grid.appendChild(card);
                         promises.push(
                             QRCode.toCanvas(document.getElementById('printQrCard' + idx), url, {
                                 width: 180, margin: 1,
