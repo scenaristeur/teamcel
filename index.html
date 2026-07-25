@@ -486,30 +486,6 @@
             display: none;
         }
 
-        /* ===== TOAST ===== */
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #1c1917;
-            color: #fff;
-            padding: 0.7rem 1.2rem;
-            border-radius: 99px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 200;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            white-space: nowrap;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
         /* --- A4 --- */
         .print-a4 {
             width: 210mm;
@@ -822,6 +798,9 @@
     <div class="overlay" id="shareOverlay" style="display:none;"></div>
     <div class="share-modal" id="shareModal" style="display:none;">
         <h2>Partager cette room</h2>
+        <div class="clipboard-info" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.6rem;margin-bottom:0.75rem;font-size:0.78rem;color:#166534;text-align:left;">
+            L'URL a ete copiee dans le presse-papier. Colle-la avec <b>Ctrl+V</b> dans n'importe quelle appli pour la partager !
+        </div>
         <canvas id="qrCanvas"></canvas>
         <div class="share-url" id="shareUrl"></div>
         <div class="share-actions">
@@ -831,9 +810,6 @@
             <button class="btn-print" id="printA4Btn">A4</button>
         </div>
     </div>
-
-    <!-- TOAST -->
-    <div class="toast" id="toast"></div>
 
     <!-- PRINT PAGES (hidden on screen) -->
     <div class="print-page" id="printPage">
@@ -1002,7 +978,6 @@
             return base + '?room=' + encodeURIComponent(roomId);
         }
 
-        // ===== PRINT (noosphere approach) =====
         var cachedPrintDataUrl = null;
 
         function showShareModal(roomId) {
@@ -1025,6 +1000,28 @@
             }).then(function(dataUrl) {
                 cachedPrintDataUrl = dataUrl;
             });
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).catch(function() {
+                    fallbackCopy(url);
+                });
+            } else {
+                fallbackCopy(url);
+            }
+        }
+
+        function fallbackCopy(text) {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '0';
+            ta.style.top = '0';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
         }
 
         function hideShareModal() {
@@ -1042,81 +1039,47 @@
         function doPrint(type) {
             var url = getShareUrl(roomFromUrl || 'public');
             var qrSrc = cachedPrintDataUrl || '';
-
             var title = 'TeamCel';
             var subtitle = 'Le chat anonyme du lieu';
-            var step1, step2, step3, footer;
-
-            if (type === 'a4') {
-                step1 = 'Scan le QR code avec ton telephone';
-                step2 = "Un pseudo t'est attribue automatiquement";
-                step3 = 'Ecris ton message et rencontre du monde';
-                footer = 'teamcel.app &mdash; Chat anonyme &mdash; sans inscription &mdash; bienveillant';
-            } else if (type === 'card') {
-                step1 = 'Scan le QR code';
-                step2 = 'Pseudo automatique';
-                step3 = 'Discute et rencontre';
-                footer = 'teamcel.app';
-            } else {
-                step1 = 'Scan le QR code';
-                step2 = 'Pseudo automatique';
-                step3 = 'Discute et rencontre';
-                footer = 'teamcel.app';
-            }
 
             var html = '<html><head><title>' + title + '</title>' +
                 '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-                '<style>' +
-                'body{font-family:-apple-system,Segoe UI,system-ui,sans-serif;margin:0;padding:0;color:#1c1917}' +
-                'hr{border:none;border-top:1px dashed #d6d3d1;margin:12px 0}' +
-                '</style></head><body>';
+                '<style>body{font-family:-apple-system,Segoe UI,system-ui,sans-serif;margin:0;padding:20px;color:#1c1917;text-align:center}hr{border:none;border-top:1px dashed #d6d3d1;margin:12px 0}</style></head><body>';
 
             if (type === 'a4') {
                 html += '<div style="background:#f97316;padding:40px 50px 30px;text-align:center">' +
-                    '<h1 style="font-size:42px;font-weight:800;color:#fff;margin:0;letter-spacing:-0.03em">'+title+'</h1>' +
+                    '<h1 style="font-size:42px;font-weight:800;color:#fff;margin:0">'+title+'</h1>' +
                     '<p style="font-size:16px;color:rgba(255,255,255,0.85);margin:0">'+subtitle+'</p></div>' +
                     '<div style="padding:30px 60px;text-align:center">' +
                     '<img src="'+qrSrc+'" style="border:2px solid #e7e5e4;border-radius:8px;padding:10px;background:#fff" width="200"><br>' +
                     '<div style="font-family:monospace;font-size:12px;background:#f5f5f4;padding:8px 16px;border-radius:4px;margin:16px auto;display:inline-block;word-break:break-all;color:#78716c">'+url+'</div>' +
                     '<div style="display:flex;gap:30px;justify-content:center;margin-top:20px">' +
-                    '<div style="text-align:center"><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">1</div><p style="font-size:12px;margin:0;color:#44403c">'+step1+'</p></div>' +
-                    '<div style="text-align:center"><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">2</div><p style="font-size:12px;margin:0;color:#44403c">'+step2+'</p></div>' +
-                    '<div style="text-align:center"><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">3</div><p style="font-size:12px;margin:0;color:#44403c">'+step3+'</p></div>' +
+                    '<div><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">1</div><p style="font-size:12px;margin:0;color:#44403c">Scan le QR code</p></div>' +
+                    '<div><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">2</div><p style="font-size:12px;margin:0;color:#44403c">Pseudo automatique</p></div>' +
+                    '<div><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">3</div><p style="font-size:12px;margin:0;color:#44403c">Discute et rencontre</p></div>' +
                     '</div></div>' +
-                    '<div style="background:#fafaf9;border-top:1px solid #e7e5e4;padding:14px 50px;display:flex;justify-content:space-between;font-size:10px;color:#a8a29e"><span>teamcel.app</span><span>'+footer+'</span></div>';
+                    '<div style="border-top:1px solid #e7e5e4;padding:14px 50px;font-size:10px;color:#a8a29e">teamcel.app &mdash; Chat anonyme</div>';
 
             } else if (type === 'card') {
-                html += '<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);width:210mm;height:297mm;margin:0 auto">';
                 for (var i = 0; i < 8; i++) {
-                    html += '<div style="width:105mm;height:74.25mm;border:0.5px solid #e7e5e4;box-sizing:border-box;padding:10px 14px 8px;display:flex;flex-direction:column">' +
-                        '<div style="display:flex;flex:1;gap:10px">' +
-                        '<div style="flex:1;display:flex;flex-direction:column;justify-content:center">' +
-                        '<div style="font-size:20px;font-weight:800;color:#f97316;letter-spacing:-0.02em;line-height:1">Team<span style="color:#1c1917">Cel</span></div>' +
-                        '<div style="font-size:8px;line-height:1.8;color:#44403c;margin-top:4px"><strong style="color:#f97316">1.</strong> '+step1+'<br><strong style="color:#f97316">2.</strong> '+step2+'<br><strong style="color:#f97316">3.</strong> '+step3+'</div>' +
-                        '</div>' +
-                        '<div style="display:flex;align-items:center"><img src="'+qrSrc+'" width="60"></div>' +
-                        '</div>' +
-                        '<div style="border-top:0.5px solid #e7e5e4;padding-top:6px;margin-top:6px;text-align:center"><div style="font-family:monospace;font-size:7px;color:#78716c;word-break:break-all;line-height:1.3">'+url+'</div></div>' +
-                        '</div>';
+                    html += '<div style="display:inline-flex;width:48%;height:120px;border:1px solid #e7e5e4;margin:2px;padding:8px;text-align:left;vertical-align:top;box-sizing:border-box">' +
+                        '<div style="flex:1"><div style="font-size:16px;font-weight:800;color:#f97316">Team<span style="color:#1c1917">Cel</span></div>' +
+                        '<div style="font-size:8px;color:#44403c;margin-top:4px">1. Scan le QR code<br>2. Pseudo automatique<br>3. Discute et rencontre</div></div>' +
+                        '<div><img src="'+qrSrc+'" width="50"></div></div>';
                 }
-                html += '</div>';
 
             } else {
-                html += '<div style="width:58mm;padding:12px 8px;text-align:center;font-family:Courier New,monospace">' +
-                    '<div style="font-size:16px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px">'+title+'</div>' +
-                    '<div style="font-size:8px;color:#78716c;margin-bottom:12px">'+subtitle+'</div>' +
+                html += '<div style="width:200px;margin:0 auto;font-family:Courier New,monospace">' +
+                    '<h2 style="margin:0">'+title+'</h2>' +
+                    '<p style="font-size:10px;color:#78716c">'+subtitle+'</p>' +
                     '<img src="'+qrSrc+'" width="140"><br>' +
-                    '<div style="font-size:7px;word-break:break-all;color:#78716c;margin:12px 0;line-height:1.3">'+url+'</div>' +
+                    '<div style="font-size:8px;word-break:break-all;color:#78716c;margin:10px 0">'+url+'</div>' +
                     '<hr>' +
-                    '<div style="font-size:7px;text-align:left;line-height:1.8;color:#44403c">' +
-                    '1. Scan le QR code<br>2. Pseudo automatique<br>3. Discute et rencontre</div>' +
-                    '<div style="margin-top:12px;font-size:6px;color:#a8a29e">'+footer+'</div>' +
-                    '</div>';
+                    '<div style="font-size:8px;text-align:left;color:#44403c">1. Scan le QR code<br>2. Pseudo automatique<br>3. Discute et rencontre</div>' +
+                    '<p style="font-size:7px;color:#a8a29e">teamcel.app</p></div>';
             }
 
             html += '</body></html>';
-
-            hideShareModal();
 
             var mywindow = window.open('', 'PRINT', 'height=600,width=800');
             if (mywindow) {
@@ -1124,12 +1087,6 @@
                 mywindow.document.close();
                 mywindow.focus();
                 mywindow.print();
-            }
-
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(url).then(function() {
-                    showToast('Lien copie dans le presse-papier !');
-                }).catch(function() {});
             }
         }
 
@@ -1148,13 +1105,6 @@
             return text.replace(urlRegex, function(url) {
                 return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
             });
-        }
-
-        function showToast(msg) {
-            var el = document.getElementById('toast');
-            el.textContent = msg;
-            el.classList.add('show');
-            setTimeout(function() { el.classList.remove('show'); }, 2500);
         }
     </script>
 
