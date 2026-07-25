@@ -486,6 +486,30 @@
             display: none;
         }
 
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1c1917;
+            color: #fff;
+            padding: 0.7rem 1.2rem;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
         /* --- A4 --- */
         .print-a4 {
             width: 210mm;
@@ -808,6 +832,9 @@
         </div>
     </div>
 
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
     <!-- PRINT PAGES (hidden on screen) -->
     <div class="print-page" id="printPage">
         <!-- A4 -->
@@ -975,6 +1002,9 @@
             return base + '?room=' + encodeURIComponent(roomId);
         }
 
+        // ===== PRINT (noosphere approach) =====
+        var cachedPrintDataUrl = null;
+
         function showShareModal(roomId) {
             var url = getShareUrl(roomId);
 
@@ -983,11 +1013,17 @@
             document.getElementById('shareOverlay').style.display = 'block';
             document.getElementById('shareModal').style.display = 'block';
 
-            // Generate QR
             QRCode.toCanvas(document.getElementById('qrCanvas'), url, {
                 width: 200,
                 margin: 2,
                 color: { dark: '#1c1917', light: '#ffffff' }
+            });
+
+            QRCode.toDataURL(url, {
+                width: 300, margin: 2,
+                color: { dark: '#1c1917', light: '#ffffff' }
+            }).then(function(dataUrl) {
+                cachedPrintDataUrl = dataUrl;
             });
         }
 
@@ -1003,83 +1039,98 @@
         document.getElementById('closeShare').addEventListener('click', hideShareModal);
         document.getElementById('shareOverlay').addEventListener('click', hideShareModal);
 
-        // ===== PRINT =====
         function doPrint(type) {
             var url = getShareUrl(roomFromUrl || 'public');
-            var urlEl4 = document.getElementById('printUrlA4');
-            var urlElCard = document.getElementById('printUrlCard');
-            var urlElMini = document.getElementById('printUrlMini');
-            if (urlEl4) urlEl4.textContent = url;
-            if (urlElCard) urlElCard.textContent = url;
-            if (urlElMini) urlElMini.textContent = url;
+            var qrSrc = cachedPrintDataUrl || '';
 
-            document.getElementById('printA4').style.display = 'none';
-            document.getElementById('printCard').style.display = 'none';
-            document.getElementById('printMini').style.display = 'none';
-
-            var qrSize, targetId;
+            var title = 'TeamCel';
+            var subtitle = 'Le chat anonyme du lieu';
+            var step1, step2, step3, footer;
 
             if (type === 'a4') {
-                document.getElementById('printA4').style.display = 'block';
-                targetId = 'printQrA4';
-                qrSize = 200;
+                step1 = 'Scan le QR code avec ton telephone';
+                step2 = "Un pseudo t'est attribue automatiquement";
+                step3 = 'Ecris ton message et rencontre du monde';
+                footer = 'teamcel.app &mdash; Chat anonyme &mdash; sans inscription &mdash; bienveillant';
             } else if (type === 'card') {
-                var grid = document.getElementById('printCard');
-                grid.innerHTML = '';
-                grid.style.display = 'grid';
-                var promises = [];
-                for (var i = 0; i < 8; i++) {
-                    (function(idx) {
-                        var card = document.createElement('div');
-                        card.className = 'print-card';
-                        card.innerHTML =
-                            '<div class="print-card-top">' +
-                                '<div class="print-card-left">' +
-                                    '<h3>Team<span>Cel</span></h3>' +
-                                    '<div class="print-card-steps">' +
-                                        '<div><strong>1.</strong> Scan le QR code</div>' +
-                                        '<div><strong>2.</strong> Pseudo automatique</div>' +
-                                        '<div><strong>3.</strong> Discute et rencontre</div>' +
-                                    '</div>' +
-                                '</div>' +
-                                '<div class="print-card-right">' +
-                                    '<canvas id="printQrCard' + idx + '"></canvas>' +
-                                '</div>' +
-                            '</div>' +
-                            '<div class="print-card-bottom">' +
-                                '<div class="card-url">' + url + '</div>' +
-                            '</div>';
-                        grid.appendChild(card);
-                        promises.push(
-                            QRCode.toCanvas(document.getElementById('printQrCard' + idx), url, {
-                                width: 180, margin: 1,
-                                color: { dark: '#1c1917', light: '#ffffff' }
-                            })
-                        );
-                    })(i);
-                }
-                Promise.all(promises).then(function() {
-                    hideShareModal();
-                    document.getElementById('printPage').style.display = 'block';
-                    window.print();
-                    document.getElementById('printPage').style.display = 'none';
-                });
-                return;
+                step1 = 'Scan le QR code';
+                step2 = 'Pseudo automatique';
+                step3 = 'Discute et rencontre';
+                footer = 'teamcel.app';
             } else {
-                document.getElementById('printMini').style.display = 'block';
-                targetId = 'printQrMini';
-                qrSize = 140;
+                step1 = 'Scan le QR code';
+                step2 = 'Pseudo automatique';
+                step3 = 'Discute et rencontre';
+                footer = 'teamcel.app';
             }
 
-            QRCode.toCanvas(document.getElementById(targetId), url, {
-                width: qrSize, margin: 2,
-                color: { dark: '#1c1917', light: '#ffffff' }
-            }).then(function() {
-                hideShareModal();
-                document.getElementById('printPage').style.display = 'block';
-                window.print();
-                document.getElementById('printPage').style.display = 'none';
-            });
+            var html = '<html><head><title>' + title + '</title>' +
+                '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+                '<style>' +
+                'body{font-family:-apple-system,Segoe UI,system-ui,sans-serif;margin:0;padding:0;color:#1c1917}' +
+                'hr{border:none;border-top:1px dashed #d6d3d1;margin:12px 0}' +
+                '</style></head><body>';
+
+            if (type === 'a4') {
+                html += '<div style="background:#f97316;padding:40px 50px 30px;text-align:center">' +
+                    '<h1 style="font-size:42px;font-weight:800;color:#fff;margin:0;letter-spacing:-0.03em">'+title+'</h1>' +
+                    '<p style="font-size:16px;color:rgba(255,255,255,0.85);margin:0">'+subtitle+'</p></div>' +
+                    '<div style="padding:30px 60px;text-align:center">' +
+                    '<img src="'+qrSrc+'" style="border:2px solid #e7e5e4;border-radius:8px;padding:10px;background:#fff" width="200"><br>' +
+                    '<div style="font-family:monospace;font-size:12px;background:#f5f5f4;padding:8px 16px;border-radius:4px;margin:16px auto;display:inline-block;word-break:break-all;color:#78716c">'+url+'</div>' +
+                    '<div style="display:flex;gap:30px;justify-content:center;margin-top:20px">' +
+                    '<div style="text-align:center"><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">1</div><p style="font-size:12px;margin:0;color:#44403c">'+step1+'</p></div>' +
+                    '<div style="text-align:center"><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">2</div><p style="font-size:12px;margin:0;color:#44403c">'+step2+'</p></div>' +
+                    '<div style="text-align:center"><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">3</div><p style="font-size:12px;margin:0;color:#44403c">'+step3+'</p></div>' +
+                    '</div></div>' +
+                    '<div style="background:#fafaf9;border-top:1px solid #e7e5e4;padding:14px 50px;display:flex;justify-content:space-between;font-size:10px;color:#a8a29e"><span>teamcel.app</span><span>'+footer+'</span></div>';
+
+            } else if (type === 'card') {
+                html += '<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);width:210mm;height:297mm;margin:0 auto">';
+                for (var i = 0; i < 8; i++) {
+                    html += '<div style="width:105mm;height:74.25mm;border:0.5px solid #e7e5e4;box-sizing:border-box;padding:10px 14px 8px;display:flex;flex-direction:column">' +
+                        '<div style="display:flex;flex:1;gap:10px">' +
+                        '<div style="flex:1;display:flex;flex-direction:column;justify-content:center">' +
+                        '<div style="font-size:20px;font-weight:800;color:#f97316;letter-spacing:-0.02em;line-height:1">Team<span style="color:#1c1917">Cel</span></div>' +
+                        '<div style="font-size:8px;line-height:1.8;color:#44403c;margin-top:4px"><strong style="color:#f97316">1.</strong> '+step1+'<br><strong style="color:#f97316">2.</strong> '+step2+'<br><strong style="color:#f97316">3.</strong> '+step3+'</div>' +
+                        '</div>' +
+                        '<div style="display:flex;align-items:center"><img src="'+qrSrc+'" width="60"></div>' +
+                        '</div>' +
+                        '<div style="border-top:0.5px solid #e7e5e4;padding-top:6px;margin-top:6px;text-align:center"><div style="font-family:monospace;font-size:7px;color:#78716c;word-break:break-all;line-height:1.3">'+url+'</div></div>' +
+                        '</div>';
+                }
+                html += '</div>';
+
+            } else {
+                html += '<div style="width:58mm;padding:12px 8px;text-align:center;font-family:Courier New,monospace">' +
+                    '<div style="font-size:16px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px">'+title+'</div>' +
+                    '<div style="font-size:8px;color:#78716c;margin-bottom:12px">'+subtitle+'</div>' +
+                    '<img src="'+qrSrc+'" width="140"><br>' +
+                    '<div style="font-size:7px;word-break:break-all;color:#78716c;margin:12px 0;line-height:1.3">'+url+'</div>' +
+                    '<hr>' +
+                    '<div style="font-size:7px;text-align:left;line-height:1.8;color:#44403c">' +
+                    '1. Scan le QR code<br>2. Pseudo automatique<br>3. Discute et rencontre</div>' +
+                    '<div style="margin-top:12px;font-size:6px;color:#a8a29e">'+footer+'</div>' +
+                    '</div>';
+            }
+
+            html += '</body></html>';
+
+            hideShareModal();
+
+            var mywindow = window.open('', 'PRINT', 'height=600,width=800');
+            if (mywindow) {
+                mywindow.document.write(html);
+                mywindow.document.close();
+                mywindow.focus();
+                mywindow.print();
+            }
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(function() {
+                    showToast('Lien copie dans le presse-papier !');
+                }).catch(function() {});
+            }
         }
 
         document.getElementById('printA4Btn').addEventListener('click', function() {
@@ -1097,6 +1148,13 @@
             return text.replace(urlRegex, function(url) {
                 return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
             });
+        }
+
+        function showToast(msg) {
+            var el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(function() { el.classList.remove('show'); }, 2500);
         }
     </script>
 
