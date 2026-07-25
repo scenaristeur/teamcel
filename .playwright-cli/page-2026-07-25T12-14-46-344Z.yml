@@ -1,0 +1,6 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: TeamCel
+  - generic [ref=e4]: Chat anonyme pour les timides. Entre dans une room, discute, rencontre.
+  - generic [ref=e5]:
+    - textbox "Nom de la room..." [ref=e6]
+    - button "Entrer" [ref=e7] [cursor=pointer]

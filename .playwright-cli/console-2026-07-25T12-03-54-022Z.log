@@ -1,0 +1,7 @@
+[      94ms] [LOG] Hello wonderful person! :) Thanks for using GUN, please ask for help on http://chat.gun.eco if anything takes you longer than 5min to figure out! @ https://cdn.jsdelivr.net/npm/gun/gun.js:541
+[     177ms] [ERROR] WebSocket connection to 'wss://shogun-relay.scobrudot.dev/gun' failed: Error in connection establishment: net::ERR_CERT_AUTHORITY_INVALID @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754
+[     186ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3456/favicon.ico:0
+[   81554ms] [LOG] Hello wonderful person! :) Thanks for using GUN, please ask for help on http://chat.gun.eco if anything takes you longer than 5min to figure out! @ https://cdn.jsdelivr.net/npm/gun/gun.js:541
+[   81627ms] [ERROR] WebSocket connection to 'wss://shogun-relay.scobrudot.dev/gun' failed: Error in connection establishment: net::ERR_CERT_AUTHORITY_INVALID @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754
+[  213421ms] [LOG] Hello wonderful person! :) Thanks for using GUN, please ask for help on http://chat.gun.eco if anything takes you longer than 5min to figure out! @ https://cdn.jsdelivr.net/npm/gun/gun.js:541
+[  213725ms] [ERROR] WebSocket connection to 'wss://shogun-relay.scobrudot.dev/gun' failed: Error in connection establishment: net::ERR_CERT_AUTHORITY_INVALID @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754

@@ -1,0 +1,3 @@
+[     103ms] [LOG] Hello wonderful person! :) Thanks for using GUN, please ask for help on http://chat.gun.eco if anything takes you longer than 5min to figure out! @ https://cdn.jsdelivr.net/npm/gun/gun.js:541
+[     324ms] [ERROR] WebSocket connection to 'wss://shogun-relay.scobrudot.dev/gun' failed: Error in connection establishment: net::ERR_CERT_AUTHORITY_INVALID @ https://cdn.jsdelivr.net/npm/gun/gun.js:1754
+[   53161ms] [LOG] Warning: You're syncing 1K+ records a second, faster than DOM can update - consider limiting query. @ https://cdn.jsdelivr.net/npm/gun/gun.js:438
