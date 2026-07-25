@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TeamCel</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="TeamCel">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="icon-192.svg">
     <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
     <script type="importmap">
     {
@@ -156,6 +161,26 @@
             padding: 0.2rem 0.5rem;
             border-radius: 99px;
             border: 1px solid var(--border);
+            cursor: pointer;
+            outline: none;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .room-badge:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .room-badge:focus {
+            border-color: var(--primary);
+            white-space: pre;
+            overflow: visible;
+            text-overflow: unset;
+            max-width: 160px;
+            background: var(--card-bg);
         }
 
         .share-btn {
@@ -419,8 +444,13 @@
             gap: 0.5rem;
         }
 
+        .share-actions {
+            flex-wrap: wrap;
+        }
+
         .share-actions button {
             flex: 1;
+            min-width: 60px;
             padding: 0.65rem;
             border: none;
             border-radius: 99px;
@@ -435,6 +465,11 @@
 
         .btn-print {
             background: var(--primary);
+            color: white;
+        }
+
+        .btn-native-share {
+            background: #2563eb;
             color: white;
         }
 
@@ -798,13 +833,14 @@
     <div class="overlay" id="shareOverlay" style="display:none;"></div>
     <div class="share-modal" id="shareModal" style="display:none;">
         <h2>Partager cette room</h2>
-        <div class="clipboard-info" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.6rem;margin-bottom:0.75rem;font-size:0.78rem;color:#166534;text-align:left;">
+        <div class="clipboard-info" id="clipboardInfo" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.6rem;margin-bottom:0.75rem;font-size:0.78rem;color:#166534;text-align:left;">
             L'URL a ete copiee dans le presse-papier. Colle-la avec <b>Ctrl+V</b> dans n'importe quelle appli pour la partager !
         </div>
         <canvas id="qrCanvas"></canvas>
         <div class="share-url" id="shareUrl"></div>
         <div class="share-actions">
             <button class="btn-close-share" id="closeShare">Fermer</button>
+            <button class="btn-native-share" id="nativeShareBtn" style="display:none;">Partager</button>
             <button class="btn-print" id="printMiniBtn">58mm</button>
             <button class="btn-print" id="printCardBtn">Carte</button>
             <button class="btn-print" id="printA4Btn">A4</button>
@@ -901,9 +937,29 @@
         });
 
         function initChat(roomId) {
-            document.getElementById('roomBadge').textContent = roomId.length > 12
-                ? roomId.substring(0, 12) + '...'
-                : roomId;
+            var badge = document.getElementById('roomBadge');
+            badge.textContent = roomId;
+            badge.title = 'Clique pour renommer la room';
+            badge.contentEditable = true;
+
+            badge.addEventListener('blur', function() {
+                finishRename(roomId);
+            });
+            badge.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    badge.blur();
+                }
+            });
+
+            function finishRename(originalId) {
+                var newName = badge.textContent.trim();
+                if (!newName || newName === originalId) {
+                    badge.textContent = originalId;
+                    return;
+                }
+                window.location.search = '?room=' + encodeURIComponent(newName);
+            }
 
             window.addEventListener('chattable-ready', function() {
                 var pseudo = window.chattable.user.name;
@@ -1001,12 +1057,30 @@
                 cachedPrintDataUrl = dataUrl;
             });
 
+            // Clipboard copy
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(url).catch(function() {
                     fallbackCopy(url);
                 });
             } else {
                 fallbackCopy(url);
+            }
+
+            // Web Share API
+            var nativeBtn = document.getElementById('nativeShareBtn');
+            if (navigator.share) {
+                nativeBtn.style.display = 'block';
+                nativeBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    navigator.share({
+                        title: 'TeamCel',
+                        text: 'Rejoins le chat anonyme !',
+                        url: url
+                    }).catch(function() {});
+                    hideShareModal();
+                };
+            } else {
+                nativeBtn.style.display = 'none';
             }
         }
 
@@ -1031,13 +1105,15 @@
         }
 
         document.getElementById('shareBtn').addEventListener('click', function() {
-            showShareModal(roomFromUrl || 'public');
+            var currentRoom = new URLSearchParams(window.location.search).get('room') || 'public';
+            showShareModal(currentRoom);
         });
         document.getElementById('closeShare').addEventListener('click', hideShareModal);
         document.getElementById('shareOverlay').addEventListener('click', hideShareModal);
 
         function doPrint(type) {
-            var url = getShareUrl(roomFromUrl || 'public');
+            var currentRoom = new URLSearchParams(window.location.search).get('room') || 'public';
+            var url = getShareUrl(currentRoom);
             var qrSrc = cachedPrintDataUrl || '';
             var title = 'TeamCel';
             var subtitle = 'Le chat anonyme du lieu';
@@ -1105,6 +1181,11 @@
             return text.replace(urlRegex, function(url) {
                 return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
             });
+        }
+
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
     </script>
 
