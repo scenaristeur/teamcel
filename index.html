@@ -1002,7 +1002,10 @@
 
             document.getElementById('pseudoOk').addEventListener('click', function() {
                 var val = document.getElementById('pseudoDisplay').textContent.trim();
-                if (val) window.chattable.user.name = val;
+                if (val) {
+                    window.chattable.user.name = val;
+                    sessionStorage.setItem('teamcel-pseudo', val);
+                }
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('pseudoToast').style.display = 'none';
                 document.getElementById('flairBar').style.display = 'flex';

@@ -64,8 +64,9 @@ var chattable = {
 
         this.gun = Gun({ peers: peers });
 
-        // Generate or restore pseudo (fixed per session, no localStorage)
-        this.user.name = this._generatePseudo();
+        // Generate or restore pseudo (fixed per session)
+        this.user.name = sessionStorage.getItem('teamcel-pseudo') || this._generatePseudo();
+        sessionStorage.setItem('teamcel-pseudo', this.user.name);
 
         const roomId = parameters?.chat || 'public';
         this.connectToRoom(roomId);
