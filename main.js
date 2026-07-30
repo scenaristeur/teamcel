@@ -45,10 +45,10 @@ var chattable = {
         }
 
         const defaultPeers = [
-            "https://shogun-relay.scobrudot.dev/gun",
-            "https://sudorecords.scobrudot.dev/gun",
+            "http://127.0.0.1:8765/gun",
+            "https://teamcel-relay.onrender.com/gun",
             "https://gun.defucc.me/gun",
-            "https://gun.o8.is/gun"
+            "https://relay.peer.ooo/gun"
         ];
 
         let peers = [...defaultPeers];

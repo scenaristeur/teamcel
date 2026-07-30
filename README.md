@@ -11,3 +11,6 @@ npx skills add https://github.com/microsoft/playwright-cli --skill playwright-cl
 npm run dev
 http://localhost:4567/index.html
 http:/xxx.xxx.xxx.xxx:4567/index.html
+
+# gundb deploy peer-relay
+- https://github.com/amark/gun#deploy
