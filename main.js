@@ -46,7 +46,7 @@ var chattable = {
 
         const defaultPeers = [
             "http://127.0.0.1:8765/gun",
-            "https://relay.chateaudesrobots.fr/gun",
+            "https://info-opportunities-particles-faculty.trycloudflare.com/gun",
             "https://gun.defucc.me/gun",
             "https://relay.peer.ooo/gun"
         ];
