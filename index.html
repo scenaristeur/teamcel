@@ -134,6 +134,46 @@
             color: var(--primary);
         }
 
+        .recent-rooms {
+            width: 100%;
+            max-width: 300px;
+            margin-top: 0.5rem;
+        }
+
+        .recent-rooms-title {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-bottom: 0.4rem;
+            text-align: left;
+        }
+
+        .recent-rooms-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .recent-room-chip {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 99px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            text-decoration: none;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .recent-room-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
         /* ===== CHAT SCREEN ===== */
         .chat-screen {
             display: none;
@@ -808,7 +848,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1</small></div>
+        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-b</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -816,6 +856,10 @@
         <div class="landing-form">
             <input type="text" id="roomNameInput" placeholder="Nom de la room..." autocomplete="off">
             <button id="goBtn">Entrer</button>
+        </div>
+        <div class="recent-rooms" id="recentRooms" style="display:none;">
+            <div class="recent-rooms-title">Mes dernières rooms</div>
+            <div class="recent-rooms-list" id="recentRoomsList"></div>
         </div>
         <a class="landing-stats-link" href="stats.html">Stats des rooms</a>
     </div>
@@ -940,8 +984,16 @@
         const chatScreen = document.getElementById('chatScreen');
 
         function enterRoom(roomId) {
-            // Redirect with room param
+            saveRecentRoom(roomId);
             window.location.search = '?room=' + encodeURIComponent(roomId);
+        }
+
+        function saveRecentRoom(roomId) {
+            var recent = JSON.parse(localStorage.getItem('teamcel-recent') || '[]');
+            recent = recent.filter(function(r) { return r !== roomId; });
+            recent.unshift(roomId);
+            if (recent.length > 5) recent.length = 5;
+            localStorage.setItem('teamcel-recent', JSON.stringify(recent));
         }
 
         if (roomFromUrl) {
@@ -953,6 +1005,18 @@
             // No room — show landing
             landingScreen.style.display = 'flex';
             chatScreen.style.display = 'none';
+            renderRecentRooms();
+        }
+
+        function renderRecentRooms() {
+            var recent = JSON.parse(localStorage.getItem('teamcel-recent') || '[]');
+            var container = document.getElementById('recentRooms');
+            var list = document.getElementById('recentRoomsList');
+            if (recent.length === 0) { container.style.display = 'none'; return; }
+            container.style.display = 'block';
+            list.innerHTML = recent.map(function(r) {
+                return '<a class="recent-room-chip" href="./?room=' + encodeURIComponent(r) + '">' + r + '</a>';
+            }).join('');
         }
 
         // Landing: go button
@@ -1026,6 +1090,11 @@
 
             document.getElementById('flairInput').addEventListener('change', function() {
                 window.chattable.setFlair(this.value);
+            });
+
+            document.querySelector('.brand').addEventListener('click', function() {
+                sessionStorage.removeItem('teamcel-room');
+                window.location.search = '';
             });
 
             window.addEventListener('chattable-message', function(e) {
