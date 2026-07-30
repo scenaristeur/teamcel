@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stats - TeamCel</title>
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-dim: #ea580c;
+            --bg: #fafaf9;
+            --card-bg: #ffffff;
+            --text: #1c1917;
+            --text-dim: #78716c;
+            --border: #e7e5e4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 0.75rem 1rem;
+            padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        .back-link {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        #content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .stats-header {
+            margin-bottom: 1rem;
+        }
+
+        .stats-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .stats-header p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 0.25rem;
+        }
+
+        .room-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .room-card-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .room-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+            word-break: break-all;
+        }
+
+        .room-link {
+            font-size: 0.7rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .room-link:hover {
+            text-decoration: underline;
+        }
+
+        .room-users {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        .room-users strong {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .room-users .label {
+            font-size: 0.7rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-dim);
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 0.6rem;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        .status-bar .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: inline-block;
+            margin-right: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @media (min-width: 600px) {
+            body {
+                max-width: 500px;
+                margin: 0 auto;
+                border-left: 1px solid var(--border);
+                border-right: 1px solid var(--border);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand">Team<span>Cel</span> <span style="font-size:0.7rem;color:var(--text-dim);font-weight:400;">stats</span></div>
+        <a class="back-link" href=".">&larr; Chat</a>
+    </header>
+
+    <div id="content">
+        <div class="stats-header">
+            <h2>Rooms actives</h2>
+            <p id="roomCount">Recherche en cours...</p>
+        </div>
+        <div id="roomList"></div>
+    </div>
+
+    <div class="status-bar">
+        <span><span class="dot"></span>Connecté aux relays GunDB</span>
+        <span id="refreshStatus">Mise à jour en temps réel</span>
+    </div>
+
+    <script>
+        var roomData = {};
+
+        var peers = [
+            "http://127.0.0.1:8765/gun",
+            "https://teamcel-relay.onrender.com/gun",
+            "https://gun.defucc.me/gun",
+            "https://relay.peer.ooo/gun"
+        ];
+        var gun = Gun({ peers: peers });
+        var registry = gun.get('teamcel-registry');
+        var listEl = document.getElementById('roomList');
+        var countEl = document.getElementById('roomCount');
+
+        function getShareUrl(roomId) {
+            var base = window.location.origin + window.location.pathname.replace('stats.html', '');
+            return base + '?room=' + encodeURIComponent(roomId);
+        }
+
+        function getRoomLink(roomId) {
+            var url = getShareUrl(roomId);
+            var displayName = roomId.length > 20
+                ? roomId.substring(0, 20) + '...'
+                : roomId;
+            return '<a class="room-link" href="' + url + '" target="_blank">' + displayName + '</a>';
+        }
+
+        function render() {
+            var rooms = Object.keys(roomData);
+            countEl.textContent = rooms.length + ' room' + (rooms.length !== 1 ? 's' : '');
+
+            if (rooms.length === 0) {
+                listEl.innerHTML = '<div class="empty-state">' +
+                    '<h3>Aucune room pour le moment</h3>' +
+                    '<p>Les rooms apparaissent ici quand quelqu\'un les rejoint.<br>' +
+                    'Ouvre TeamCel et crée ou rejoins une room pour commencer.</p></div>';
+                return;
+            }
+
+            rooms.sort(function(a, b) {
+                var diff = (roomData[b].users.length || 0) - (roomData[a].users.length || 0);
+                if (diff !== 0) return diff;
+                return a.localeCompare(b);
+            });
+
+            var html = '';
+            for (var i = 0; i < rooms.length; i++) {
+                var id = rooms[i];
+                var data = roomData[id];
+                var userCount = data.users.length || 0;
+
+                html += '<div class="room-card">' +
+                    '<div class="room-card-left">' +
+                        '<div class="room-name">' + id + '</div>' +
+                        getRoomLink(id) +
+                    '</div>' +
+                    '<div class="room-users">' +
+                        '<strong>' + userCount + '</strong>' +
+                        '<span class="label">utilisateur' + (userCount !== 1 ? 's' : '') + '</span>' +
+                    '</div>' +
+                '</div>';
+            }
+            listEl.innerHTML = html;
+        }
+
+        function refreshRoom(roomId) {
+            var cutoff = Date.now() - 1000 * 60 * 2;
+            var users = [];
+
+            gun.get('teamcel-presence').get(roomId).map().once(function(data) {
+                if (data && data.name && data.timestamp && data.timestamp > cutoff) {
+                    if (users.indexOf(data.name) === -1) {
+                        users.push(data.name);
+                    }
+                }
+            });
+
+            setTimeout(function() {
+                if (!roomData[roomId]) {
+                    roomData[roomId] = { users: [] };
+                }
+                roomData[roomId].users = users;
+                render();
+            }, 1500);
+        }
+
+        // Watch registry for new rooms
+        registry.map().on(function(val, roomId) {
+            if (!val || !roomId || roomId === '_') return;
+            if (!roomData[roomId]) {
+                roomData[roomId] = { users: [] };
+                render();
+            }
+            setTimeout(function() {
+                refreshRoom(roomId);
+            }, 500);
+        });
+
+        // Global refresh every 15s
+        setInterval(function() {
+            Object.keys(roomData).forEach(refreshRoom);
+        }, 15000);
+
+        render();
+    </script>
+</body>
+
+</html>

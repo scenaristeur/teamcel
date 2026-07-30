@@ -11,14 +11,17 @@
   "license": "ISC",
   "main": "main.js",
   "scripts": {
-    "dev": "nodemon --watch . --ext html,js --exec \"npx http-serve . -p 4567 -a0.0.0.0\"",
+    "dev": "concurrently --names relay,http -c blue,green \"node relay.js\" \"npx http-server . -p 4567 -a0.0.0.0 -c-1\"",
+    "relay": "node relay.js",
     "test": "echo \"no tests yet\""
   },
   "dependencies": {
+    "gun": "^0.2020.1241",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@playwright/cli": "^0.1.17",
+    "concurrently": "^10.0.4",
     "http-serve": "^1.0.1",
     "nodemon": "^3.1.14"
   }
