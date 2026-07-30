@@ -1,15 +1,16 @@
-var CACHE_NAME = 'teamcel-v1';
+var CACHE_NAME = 'teamcel-v2';
 var urlsToCache = [
-    './',
     './index.html',
     './main.js',
-    './manifest.json'
+    './manifest.json',
+    './icon-192.svg',
+    './icon-512.svg'
 ];
 
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
-            return cache.addAll(urlsToCache);
+            return cache.addAll(urlsToCache).catch(function() {});
         })
     );
     self.skipWaiting();
@@ -29,7 +30,15 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        fetch(event.request).catch(function() {
+        fetch(event.request).then(function(response) {
+            if (response && response.status === 200) {
+                var clone = response.clone();
+                caches.open(CACHE_NAME).then(function(cache) {
+                    cache.put(event.request, clone);
+                });
+            }
+            return response;
+        }).catch(function() {
             return caches.match(event.request);
         })
     );
