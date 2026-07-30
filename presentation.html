@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamCel — Chat anonyme pour les bars</title>
+    <link rel="icon" href="icon-192.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-dim: #ea580c;
+            --bg: #fafaf9;
+            --card-bg: #ffffff;
+            --text: #1c1917;
+            --text-dim: #78716c;
+            --border: #e7e5e4;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            padding: 1rem 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: var(--card-bg);
+        }
+
+        .header-brand {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .header-brand span { color: var(--primary); }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 span { color: var(--primary); }
+
+        .hero p {
+            font-size: 1rem;
+            color: var(--text-dim);
+            max-width: 480px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .hero-cta {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 99px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .hero-cta:hover { background: var(--primary-dim); }
+
+        .hero-cta:active { transform: scale(0.98); }
+
+        /* ===== SECTIONS ===== */
+        section {
+            padding: 2.5rem 0;
+        }
+
+        section h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        section h2 span { color: var(--primary); }
+
+        /* ===== HOW IT WORKS ===== */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .step-num {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .step-content p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* ===== FOR BAR OWNERS ===== */
+        .benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .benefit {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .benefit h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .benefit h3 span { color: var(--primary); }
+
+        .benefit p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* ===== PRINT FORMATS ===== */
+        .formats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .format {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 0.75rem;
+            text-align: center;
+        }
+
+        .format-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .format h4 {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .format p {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        /* = المجره */
+        .tagline-bar {
+            background: var(--primary);
+            color: #fff;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-radius: 12px;
+        }
+
+        .tagline-bar h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline-bar p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* ===== TRY DEMO ===== */
+        .demo-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .demo-box p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .demo-input {
+            display: flex;
+            gap: 0.5rem;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .demo-input input {
+            flex: 1;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            font-size: 0.9rem;
+            outline: none;
+            background: var(--bg);
+        }
+
+        .demo-input input:focus {
+            border-color: var(--primary);
+        }
+
+        .demo-input button {
+            padding: 0.65rem 1.2rem;
+            border: none;
+            border-radius: 99px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .demo-input button:active { transform: scale(0.98); }
+
+        /* ===== PATREON ===== */
+        .patreon-box {
+            background: #fff;
+            border: 2px solid #f97316;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .patreon-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .patreon-box p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .patreon-btn {
+            display: inline-block;
+            padding: 0.7rem 1.5rem;
+            background: #f97316;
+            color: #fff;
+            font-weight: 700;
+            border-radius: 99px;
+            text-decoration: none;
+        }
+
+        .patreon-btn:hover { background: #ea580c; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        footer a { color: var(--primary); text-decoration: none; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 600px) {
+            .hero h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-brand">Team<span>Cel</span></div>
+</header>
+
+<main class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Le chat anonyme <span>pour les bars</span></h1>
+        <p>
+            Un QR code sur la porte ou la table. Tes clients scannent, discutent.
+            Sans inscription, sans app, sans modération.
+        </p>
+        <a class="hero-cta" href="./">Essayer TeamCel →</a>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section>
+        <h2>Comment ça <span>marche</span></h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>Imprime le QR code</h3>
+                    <p>Génère un QR code pour ta room et imprime-le en A4, carte de visite ou ticket 58mm.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>Colle-le à l'entrée</h3>
+                    <p>Les clients scannent avec leur téléphone. Pas de téléchargement, pas de compte.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>Ils discutent</h3>
+                    <p>Un pseudo leur est attribué. Ils peuvent échanger sans donner leur nom ni leur numéro.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOR BAR OWNERS -->
+    <section>
+        <h2>Pour les <span>bars</span></h2>
+        <div class="benefits">
+            <div class="benefit">
+                <h3><span>+</span> De lien social</h3>
+                <p>Les clients timides osent parler. Ça crée de l'ambiance et ça les fait revenir.</p>
+            </div>
+            <div class="benefit">
+                <h3><span>⚡</span> Instantané, zéro installation</h3>
+                <p>Pas d'app store, pas de compte. Un scan et c'est parti. Ça marche sur tous les téléphones.</p>
+            </div>
+            <div class="benefit">
+                <h3><span>🖨️</span> QR code prêt à imprimer</h3>
+                <p>3 formats : A4 (porte), cartes de visite (comptoir), 58mm (caisse). Impression directe depuis l'app.</p>
+            </div>
+            <div class="benefit">
+                <h3><span>🔒</span> Anonyme et bienveillant</h3>
+                <p>Pas de modération nécessaire. Les messages disparaissent au bout d'une heure. Parfait pour un public décontracté.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRINT FORMATS -->
+    <section>
+        <h2>Formats <span>d'impression</span></h2>
+        <div class="formats">
+            <div class="format">
+                <div class="format-icon">📄</div>
+                <h4>A4</h4>
+                <p>Pour la porte d'entrée</p>
+            </div>
+            <div class="format">
+                <div class="format-icon">🪪</div>
+                <h4>Carte</h4>
+                <p>8 par page, pour le comptoir</p>
+            </div>
+            <div class="format">
+                <div class="format-icon">🧾</div>
+                <h4>58mm</h4>
+                <p>Pour imprimante thermique</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- TAGLINE BAR -->
+    <section>
+        <div class="tagline-bar">
+            <h3>TeamCel, c'est gratuit</h3>
+            <p>Pas de frais cachés. Pas de pub. Juste un outil pour mieux rencontrer les gens autour d'un verre.</p>
+        </div>
+    </section>
+
+    <!-- TRY DEMO -->
+    <section>
+        <h2>Essaie <span>maintenant</span></h2>
+        <div class="demo-box">
+            <p>Crée ta room et obtiens le QR code à imprimer en quelques secondes.</p>
+            <div class="demo-input">
+                <input type="text" id="demoRoomInput" placeholder="Nom de la room..." autocomplete="off">
+                <button id="demoGoBtn">C'est parti</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PATREON -->
+    <section>
+        <h2>Soutenir le <span>projet</span></h2>
+        <div class="patreon-box">
+            <h3>TeamCel a besoin de toi</h3>
+            <p>
+                Le relay GunDB tourne sur un serveur, le domaine et le tunnel Cloudflare ont un coût.
+                Si tu utilises TeamCel dans ton bar et que tu veux soutenir le projet, un petit coup de main est le bienvenu.
+            </p>
+            <a class="patreon-btn" href="https://patreon.com/TeamCelApp" target="_blank" rel="noopener">
+                Devenir patron →</a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="container">
+    <p>
+        <a href="./">Room de démo</a> ·
+        <a href="stats.html">Stats</a> ·
+        <a href="https://github.com/scenaristeur/teamcel" target="_blank" rel="noopener">GitHub</a>
+    </p>
+    <p style="margin-top:0.5rem;font-size:0.7rem;">TeamCel — anonyme, gratuit, ouvert</p>
+</footer>
+
+<script>
+    document.getElementById('demoGoBtn').addEventListener('click', function() {
+        var name = document.getElementById('demoRoomInput').value.trim();
+        if (name) window.location.href = './?room=' + encodeURIComponent(name);
+    });
+    document.getElementById('demoRoomInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            var name = this.value.trim();
+            if (name) window.location.href = './?room=' + encodeURIComponent(name);
+        }
+    });
+</script>
+
+</body>
+</html>
