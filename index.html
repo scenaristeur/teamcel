@@ -994,8 +994,16 @@
             }
 
             window.addEventListener('chattable-ready', function() {
-                var pseudo = window.chattable.user.name;
-                document.getElementById('pseudoDisplay').textContent = pseudo;
+                var saved = sessionStorage.getItem('teamcel-pseudo');
+                if (saved) {
+                    document.getElementById('flairBar').style.display = 'flex';
+                    document.getElementById('flairInput').value = window.chattable.user.flair || '';
+                    setTimeout(function() {
+                        document.getElementById('msgInput').focus();
+                    }, 100);
+                    return;
+                }
+                document.getElementById('pseudoDisplay').textContent = window.chattable.user.name;
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('pseudoToast').style.display = 'block';
             });
