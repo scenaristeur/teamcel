@@ -203,7 +203,7 @@
 <body>
     <header>
         <div class="brand">Team<span>Cel</span> <span style="font-size:0.7rem;color:var(--text-dim);font-weight:400;">stats</span></div>
-        <a class="back-link" href=".">&larr; Chat</a>
+        <a class="back-link" id="backLink" href=".">&larr; Chat</a>
     </header>
 
     <div id="content">
@@ -231,6 +231,12 @@
         var registry = gun.get('teamcel-registry');
         var listEl = document.getElementById('roomList');
         var countEl = document.getElementById('roomCount');
+
+        // Restore room in back link if coming from a room
+        var roomParam = new URLSearchParams(window.location.search).get('room');
+        if (roomParam) {
+            document.getElementById('backLink').href = './?room=' + encodeURIComponent(roomParam);
+        }
 
         function getShareUrl(roomId) {
             var base = window.location.origin + window.location.pathname.replace('stats.html', '');
