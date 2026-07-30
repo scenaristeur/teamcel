@@ -82,12 +82,40 @@ var chattable = {
         if (this.roomRef) {
             this.roomRef.off();
         }
+        // Stop previous heartbeat
+        if (this._heartbeatTimer) {
+            clearInterval(this._heartbeatTimer);
+        }
         this.settings.room = roomId;
         this.settings.processedMessages.clear();
-        this.roomRef = this.gun.get('iframe-chat').get(roomId);
+        this.roomRef = this.gun.get('teamcel').get(roomId);
+
+        // Register room in global registry (separate top-level key)
+        this.gun.get('teamcel-registry').get(roomId).put(true);
+
+        // Start presence heartbeat (separate top-level key)
+        this._heartbeatTimer = setInterval(() => {
+            if (this.user.name) {
+                this.gun.get('teamcel-presence').get(roomId).get(this.user.name).put({
+                    name: this.user.name,
+                    timestamp: Date.now()
+                });
+            }
+        }, 30000);
+        // Write heartbeat immediately
+        if (this.user.name) {
+            this.gun.get('teamcel-presence').get(roomId).get(this.user.name).put({
+                name: this.user.name,
+                timestamp: Date.now()
+            });
+        }
 
         this.roomRef.get('messages').map().on((data, id) => {
-            if (this.settings.processedMessages.has(id)) return;
+            console.log('[GUN msg] id=' + id, JSON.stringify(data));
+            if (this.settings.processedMessages.has(id)) {
+                console.log('[GUN msg] SKIP already processed');
+                return;
+            }
             this.settings.processedMessages.add(id);
 
             if (data && data.timestamp > (Date.now() - 1000 * 60 * 60)) {
