@@ -45,6 +45,7 @@ var chattable = {
         }
 
         const defaultPeers = [
+            "https://teamcel.on.shiper.app/gun",
             "https://info-opportunities-particles-faculty.trycloudflare.com/gun",
             "https://gun.defucc.me/gun",
             "https://relay.peer.ooo/gun"

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.1-b (2026-07-31)
+
+### Added
+- **Shiper relay** — deployment on free Node.js hosting `https://teamcel.on.shiper.app/gun` (stable URL, SSL auto, Hetzner Cloud)
+
+### Changed
+- **Peer list** — added Shiper relay as primary peer in `main.js` and `stats.html`; Cloudflare tunnel kept as backup
+- **`package.json`** — added `start` script (`node relay.js`) for Shiper deployment
+- **`DEPLOY_RELAY.md`** — updated architecture: Shiper primary, Cloudflare Tunnel + Hetzner as backup
+- **DNS relay.chateaudesrobots.fr** — resolves to Hetzner VPS (157.90.162.126). Documented HTTPS options for future migration.
+
 ## 0.0.1-b (2026-07-30)
 
 ### Added
