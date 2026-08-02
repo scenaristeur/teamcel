@@ -408,6 +408,22 @@ header {
     transform: scale(0.95);
 }
 
+.conn-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #a8a29e;
+    transition: background 0.3s;
+    flex-shrink: 0;
+}
+.conn-dot.on {
+    background: #22c55e;
+}
+.conn-dot.off {
+    background: #ef4444;
+}
+
 .flair-bar {
     padding: 0.5rem 1rem;
     background: var(--card-bg);

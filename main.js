@@ -50,6 +50,21 @@ var chattable = {
 
         this.gun = Gun({ peers: peers });
 
+        // Track GunDB connection status
+        var connected = false;
+        this.gun.on('hi', function() {
+            if (!connected) {
+                connected = true;
+                document.getElementById('connDot')?.classList.remove('off');
+                document.getElementById('connDot')?.classList.add('on');
+            }
+        });
+        this.gun.on('bye', function() {
+            connected = false;
+            document.getElementById('connDot')?.classList.remove('on');
+            document.getElementById('connDot')?.classList.add('off');
+        });
+
         // Generate or restore pseudo (fixed per session)
         this.user.name = sessionStorage.getItem('teamcel-pseudo') || this._generatePseudo();
         sessionStorage.setItem('teamcel-pseudo', this.user.name);
