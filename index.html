@@ -680,9 +680,11 @@
                 if (reg.installing) trackInstalling(reg.installing);
                 reg.addEventListener('updatefound', function() {
                     trackInstalling(reg.installing);
+                    if (reg.waiting) onNewVersion();
                 });
                 var refreshing = false;
                 var hadController = !!navigator.serviceWorker.controller;
+                setTimeout(function() { reg.update(); }, 1000);
                 navigator.serviceWorker.addEventListener('controllerchange', function() {
                     if (!hadController) { hadController = true; return; }
                     if (refreshing) return;
