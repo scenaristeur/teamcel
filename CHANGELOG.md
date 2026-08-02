@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.17 (2026-08-02)
+
+### Added
+- **Nettoyage automatique des rooms inactives** — 5s après l'initialisation puis toutes les 30 min, `_cleanupStaleRooms()` parcourt le registre des rooms. Pour chaque room (hors room courante) : si aucune présence n'a été détectée depuis plus de 24h, la room est supprimée (registry + messages + présences)
+
+### Changed
+- **Version** : `0.0.17`
+
 ## 0.0.16 (2026-08-02)
 
 ### Fixed

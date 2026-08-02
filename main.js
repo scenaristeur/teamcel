@@ -62,15 +62,26 @@ var chattable = {
 
         // Dispatch ready event
         window.dispatchEvent(new CustomEvent('chattable-ready'));
+
+        // Periodic cleanup of stale rooms (every 30 min)
+        var self = this;
+        if (this._cleanupTimer) clearInterval(this._cleanupTimer);
+        this._cleanupTimer = setInterval(function() {
+            self._cleanupStaleRooms();
+        }, 30 * 60 * 1000);
+        setTimeout(function() { self._cleanupStaleRooms(); }, 5000);
     },
 
     connectToRoom(roomId) {
         if (this.roomRef) {
             this.roomRef.off();
         }
-        // Stop previous heartbeat
+        // Stop previous timers
         if (this._heartbeatTimer) {
             clearInterval(this._heartbeatTimer);
+        }
+        if (this._cleanupTimer) {
+            clearInterval(this._cleanupTimer);
         }
         this.settings.room = roomId;
         this.settings.processedMessages.clear();
@@ -130,6 +141,35 @@ var chattable = {
                     replyTo: data.replyTo || null
                 });
             }
+        });
+    },
+
+    _cleanupStaleRooms() {
+        var self = this;
+        var currentRoom = this.settings.room;
+        var threshold = Date.now() - 24 * 60 * 60 * 1000;
+
+        this.gun.get('teamcel-registry').map().once(function(val, roomId) {
+            if (!val || roomId === currentRoom) return;
+
+            var latest = 0;
+            var done = false;
+            self.gun.get('teamcel-presence').get(roomId).map().once(function(userData) {
+                if (done) return;
+                if (userData && userData.timestamp && userData.timestamp > latest) {
+                    latest = userData.timestamp;
+                }
+            });
+
+            setTimeout(function() {
+                done = true;
+                if (latest < threshold) {
+                    console.log('[cleanup] room stale:', roomId, 'last activity:', new Date(latest).toISOString());
+                    self.gun.get('teamcel-registry').get(roomId).put(null);
+                    self.gun.get('teamcel').get(roomId).put(null);
+                    self.gun.get('teamcel-presence').get(roomId).put(null);
+                }
+            }, 3000);
         });
     },
 
