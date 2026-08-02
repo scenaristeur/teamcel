@@ -75,7 +75,10 @@ var chattable = {
         this.settings.room = roomId;
         this.settings.processedMessages.clear();
         this._localSeq = 0;
-        this._slotMap = {};
+        this._keyToSeq = {};
+        this._seqToKey = {};
+        this._msgTimestamps = {};
+        this._pruneTimer = null;
         this.roomRef = this.gun.get('teamcel').get(roomId);
 
         // Register room in global registry (separate top-level key)
@@ -114,19 +117,31 @@ var chattable = {
             }
         };
 
-        this.roomRef.get('messages').map().on((data, id) => {
-            if (!data || !data.seq) return;
+        var self = this;
+        this.roomRef.get('messages').map().on((data, gunId) => {
+            if (!data) {
+                var seq = self._keyToSeq[gunId];
+                if (seq) {
+                    delete self._keyToSeq[gunId];
+                    delete self._seqToKey[seq];
+                    delete self._msgTimestamps[seq];
+                    _queueEvent('chattable-message-deleted', { id: seq });
+                }
+                return;
+            }
+            if (!data.seq) return;
 
-            var oldSeq = this._slotMap[id];
-            this._slotMap[id] = data.seq;
-            if (oldSeq && oldSeq !== data.seq) {
-                _queueEvent('chattable-message-deleted', { id: oldSeq });
+            self._keyToSeq[gunId] = data.seq;
+            self._seqToKey[data.seq] = gunId;
+
+            if (self.settings.processedMessages.has(data.seq)) return;
+            self.settings.processedMessages.add(data.seq);
+
+            if (data.timestamp) {
+                self._msgTimestamps[data.seq] = data.timestamp;
             }
 
-            if (this.settings.processedMessages.has(data.seq)) return;
-            this.settings.processedMessages.add(data.seq);
-
-            if (data.timestamp > (Date.now() - 1000 * 60 * 60)) {
+            if (data.timestamp && data.timestamp > (Date.now() - 1000 * 60 * 60)) {
                 _queueEvent('chattable-message', {
                     text: data.text,
                     name: data.name,
@@ -135,29 +150,53 @@ var chattable = {
                     id: data.seq,
                     replyTo: data.replyTo || null
                 });
-            } else if (!data) {
-                _queueEvent('chattable-message-deleted', { id: id });
             }
+
+            self._schedulePrune();
         });
+    },
+
+    _schedulePrune() {
+        if (this._pruneTimer) clearTimeout(this._pruneTimer);
+        var self = this;
+        this._pruneTimer = setTimeout(function() {
+            self._pruneTimer = null;
+            self._pruneMessages();
+        }, 2000);
+    },
+
+    _pruneMessages() {
+        var ids = Object.keys(this._msgTimestamps);
+        if (ids.length <= this.MSG_LIMIT) return;
+        var self = this;
+        ids.sort(function(a, b) {
+            return (self._msgTimestamps[a] || 0) - (self._msgTimestamps[b] || 0);
+        });
+        var toRemove = ids.slice(0, ids.length - this.MSG_LIMIT);
+        for (var i = 0; i < toRemove.length; i++) {
+            var seq = toRemove[i];
+            var gunKey = this._seqToKey[seq];
+            if (gunKey) {
+                this.roomRef.get('messages').get(gunKey).put(null);
+            }
+        }
     },
 
     sendMessage(text, replyTo) {
         if (!text || typeof text !== 'string') return;
 
         this._localSeq = (this._localSeq || 0) + 1;
-        var seq = this.user.name + '-' + this._localSeq;
-        var slot = String((this._localSeq - 1) % this.MSG_LIMIT);
         var data = {
             text: text,
             name: this.user.name,
             flair: this.user.flair || '',
             timestamp: Date.now(),
-            seq: seq
+            seq: this.user.name + '-' + this._localSeq
         };
         if (replyTo && replyTo.id) {
             data.replyTo = JSON.stringify({ id: replyTo.id, name: replyTo.name, text: replyTo.text });
         }
-        this.roomRef.get('messages').get(slot).put(data);
+        this.roomRef.get('messages').set(data);
     },
 
     setFlair(string) {

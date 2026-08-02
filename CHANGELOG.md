@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.15 (2026-08-02)
+
+### Fixed
+- **Messages qui disparaissaient** — le ring buffer à slots fixes écrasait les messages des autres utilisateurs (tous écrivaient dans le slot 0 en premier). Remplacé par `.set()` (clés GunDB uniques) + nettoyage périodique : quand une room dépasse 100 messages, les plus vieux sont supprimés du graphe via `put(null)` (2s de délai pour laisser le sync initial se stabiliser)
+- **Détection de nouvelle version PWA** — l'event `updatefound` vérifie maintenant aussi `reg.waiting` (cas où le SW passe direct en waiting avant que le listener s'attache) ; un `reg.update()` forcé après 1s pour les PWA standalone
+
+### Changed
+- **Version** : `0.0.15`
+
 ## 0.0.14 (2026-08-02)
 
 ### Added
