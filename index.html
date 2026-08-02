@@ -421,7 +421,7 @@
                     var replyText = replyData.text || '';
                     replyHtml = '<div class="msg-reply" data-reply-id="' + window._escHtml(replyData.id) + '">' +
                         '<span class="msg-reply-author">' + window._escHtml(replyData.name) + '</span>' +
-                        '<span class="msg-reply-text">' + window._escHtml(replyText.substring(0, 80)) + '</span>' +
+                        '<span class="msg-reply-text">' + window._escHtml(replyText) + '</span>' +
                     '</div>';
                 }
 
@@ -466,7 +466,7 @@
                 var text = msgEl.dataset.text || '';
                 _replyTo = { id: id, name: name, text: text };
                 var label = document.getElementById('replyLabel');
-                label.textContent = 'Répond à ' + name + ': ' + text.substring(0, 60);
+                label.textContent = 'Répond à ' + name + ': ' + (text.length > 60 ? text.substring(0, 60) + '…' : text);
                 document.getElementById('replyBar').style.display = 'flex';
                 document.getElementById('msgInput').focus();
             });
