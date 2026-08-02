@@ -12,6 +12,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="icon-192.svg">
     <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('teamcel-theme');
+            if (theme) document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <script type="importmap">
     {
         "imports": {
@@ -28,7 +34,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-e</small></div>
+        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-f</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -41,6 +47,10 @@
             <div class="recent-rooms-title">Mes dernières rooms</div>
             <div class="recent-rooms-list" id="recentRoomsList"></div>
         </div>
+        <div class="landing-theme">
+            <div class="landing-theme-label">Thème</div>
+            <div class="theme-picker" id="landingThemePicker"></div>
+        </div>
         <a class="landing-stats-link" href="stats.html">Stats des rooms</a>
         <a class="landing-about-link" href="presentation.html">En savoir plus sur TeamCel</a>
     </div>
@@ -52,6 +62,15 @@
             <div class="header-right">
                 <div class="room-badge" id="roomBadge">...</div>
                 <a class="stats-link" id="statsLink" href="stats.html" title="Stats des rooms">#</a>
+                <button class="theme-btn" id="themeBtn" title="Changer de thème">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+                        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+                        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+                        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+                    </svg>
+                </button>
                 <button class="share-btn" id="shareBtn" title="Partager">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -101,6 +120,12 @@
             <button class="btn-print" id="printCardBtn">Carte</button>
             <button class="btn-print" id="printA4Btn">A4</button>
         </div>
+    </div>
+
+    <!-- THEME DROPDOWN -->
+    <div class="theme-dropdown" id="themeDropdown" style="display:none;">
+        <div class="theme-dropdown-title">Changer de thème</div>
+        <div class="theme-picker" id="chatThemePicker"></div>
     </div>
 
     <!-- PRINT PAGES (hidden on screen) -->
@@ -163,6 +188,62 @@
         const roomFromUrl = urlParams.get('room');
         const landingScreen = document.getElementById('landingScreen');
         const chatScreen = document.getElementById('chatScreen');
+
+        /* ===== THEMES ===== */
+        var THEMES = [
+            { id: '', label: 'Classique', color: '#f97316' },
+            { id: 'ocean', label: 'Océan', color: '#0ea5e9' },
+            { id: 'forest', label: 'Forêt', color: '#10b981' },
+            { id: 'lavender', label: 'Lavande', color: '#8b5cf6' },
+            { id: 'coral', label: 'Corail', color: '#f43f5e' },
+            { id: 'night', label: 'Nuit', color: '#fb923c' }
+        ];
+
+        function applyTheme(themeId) {
+            if (themeId) document.documentElement.setAttribute('data-theme', themeId);
+            else document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('teamcel-theme', themeId);
+            var pickers = document.querySelectorAll('.theme-picker');
+            pickers.forEach(function(picker) {
+                var btns = picker.querySelectorAll('.theme-picker-btn');
+                btns.forEach(function(btn) {
+                    btn.classList.toggle('active', (btn.dataset.theme || '') === themeId);
+                });
+            });
+        }
+
+        function buildThemePicker(container) {
+            THEMES.forEach(function(t) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'theme-picker-btn';
+                btn.dataset.theme = t.id;
+                btn.title = t.label;
+                btn.setAttribute('aria-label', t.label);
+                btn.style.background = t.color;
+                btn.addEventListener('click', function() {
+                    applyTheme(t.id);
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        buildThemePicker(document.getElementById('landingThemePicker'));
+        buildThemePicker(document.getElementById('chatThemePicker'));
+        applyTheme(localStorage.getItem('teamcel-theme') || '');
+
+        var themeDropdown = document.getElementById('themeDropdown');
+        document.getElementById('themeBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            themeDropdown.style.display = themeDropdown.style.display === 'none' ? 'block' : 'none';
+        });
+        document.addEventListener('click', function(e) {
+            if (themeDropdown.style.display !== 'none' &&
+                !themeDropdown.contains(e.target) &&
+                e.target.id !== 'themeBtn') {
+                themeDropdown.style.display = 'none';
+            }
+        });
 
         function enterRoom(roomId) {
             saveRecentRoom(roomId);

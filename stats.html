@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stats - TeamCel</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('teamcel-theme');
+            if (theme) document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="peers.js"></script>

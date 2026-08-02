@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.1-f (2026-08-02)
+
+### Added
+- **Thèmes / palettes** — 6 palettes sélectionnables (Classique, Océan, Forêt, Lavande, Corail, Nuit) définies via variables CSS et `data-theme` sur `<html>`
+- **`index.html`** — script early dans `<head>` (anti-flash : applique le thème sauvegardé avant le CSS) ; picker de thèmes sur la landing (`#landingThemePicker`) ; bouton palette + dropdown dans le header du chat (`#themeDropdown`)
+- **`stats.html`** — script early dans `<head>` appliquant le thème sauvegardé
+- **Persistance** — le thème choisi est stocké dans `localStorage` (`teamcel-theme`) et réappliqué au chargement
+
+### Changed
+- **`style.css`** — définition des palettes de thèmes (`ocean`, `forest`, `lavender`, `coral`, `night`) + styles du picker, des pastilles et du dropdown
+- **Version** : `0.0.1-f`
+
 ## 0.0.1-e (2026-08-02)
 
 ### Added
