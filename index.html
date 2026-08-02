@@ -663,29 +663,54 @@
         // Register service worker for PWA + "new version" update banner
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').then(function(reg) {
+                console.log('[SW] registered - state:', reg.active?.state, 'waiting:', !!reg.waiting, 'installing:', !!reg.installing);
+
                 function showUpdateBanner() {
                     var banner = document.getElementById('updateBanner');
                     if (banner) banner.classList.add('visible');
+                    console.log('[SW] update banner shown');
                 }
-                function onNewVersion() {
-                    if (navigator.serviceWorker.controller) showUpdateBanner();
+                function onNewVersion(silent) {
+                    if (navigator.serviceWorker.controller) {
+                        showUpdateBanner();
+                    } else if (!silent) {
+                        console.log('[SW] new version installed (first install, no controller yet)');
+                    }
                 }
                 function trackInstalling(worker) {
                     if (!worker) return;
                     worker.addEventListener('statechange', function() {
+                        console.log('[SW] installing worker state:', worker.state);
                         if (worker.state === 'installed') onNewVersion();
                     });
                 }
-                if (reg.waiting) onNewVersion();
-                if (reg.installing) trackInstalling(reg.installing);
-                reg.addEventListener('updatefound', function() {
+
+                console.log('[SW] hadController:', !!navigator.serviceWorker.controller);
+                if (reg.waiting) {
+                    console.log('[SW] already waiting');
+                    onNewVersion();
+                }
+                if (reg.installing) {
+                    console.log('[SW] installing on register');
                     trackInstalling(reg.installing);
-                    if (reg.waiting) onNewVersion();
+                }
+                reg.addEventListener('updatefound', function() {
+                    console.log('[SW] updatefound');
+                    trackInstalling(reg.installing);
+                    if (reg.waiting) {
+                        console.log('[SW] already waiting after updatefound');
+                        onNewVersion();
+                    }
                 });
                 var refreshing = false;
                 var hadController = !!navigator.serviceWorker.controller;
-                setTimeout(function() { reg.update(); }, 1000);
+                console.log('[SW] hadController:', hadController);
+                setTimeout(function() {
+                    console.log('[SW] manual update check');
+                    reg.update();
+                }, 1000);
                 navigator.serviceWorker.addEventListener('controllerchange', function() {
+                    console.log('[SW] controllerchange, hadController was:', hadController, 'refreshing:', refreshing);
                     if (!hadController) { hadController = true; return; }
                     if (refreshing) return;
                     refreshing = true;
@@ -694,6 +719,7 @@
                 var reloadBtn = document.getElementById('updateReloadBtn');
                 if (reloadBtn) {
                     reloadBtn.addEventListener('click', function() {
+                        console.log('[SW] reload button clicked, waiting:', !!reg.waiting);
                         if (reg.waiting) {
                             reg.waiting.postMessage({ type: 'SKIP_WAITING' });
                         } else {
@@ -701,6 +727,8 @@
                         }
                     });
                 }
+            }).catch(function(err) {
+                console.error('[SW] registration error:', err);
             });
         }
     </script>
