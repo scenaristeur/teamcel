@@ -862,7 +862,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-b</small></div>
+        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-c</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -1114,7 +1114,7 @@
 
             window.addEventListener('chattable-message', function(e) {
                 var msg = e.detail;
-                console.log('[CHAT event] message from ' + msg.name + ': ' + msg.text);
+               // console.log('[CHAT event] message from ' + msg.name + ': ' + msg.text);
                 var container = document.getElementById('messages');
                 var isMe = msg.name === window.chattable.user.name;
 

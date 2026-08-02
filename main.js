@@ -44,10 +44,12 @@ var chattable = {
             return;
         }
 
+        const localRelay = 'http://localhost:8765/gun';
+        const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
         const defaultPeers = [
+            ...(isLocal ? [localRelay] : []),
             "https://teamcel-relay-809f.onbelmo.uk/gun",
-         //   "https://teamcel.on.shiper.app/gun",
-         //   "https://info-opportunities-particles-faculty.trycloudflare.com/gun",
             "https://gun.defucc.me/gun",
             "https://relay.peer.ooo/gun"
         ];
@@ -113,11 +115,11 @@ var chattable = {
         }
 
         this.roomRef.get('messages').map().on((data, id) => {
-            console.log('[GUN msg] id=' + id, JSON.stringify(data));
-            if (this.settings.processedMessages.has(id)) {
-                console.log('[GUN msg] SKIP already processed');
-                return;
-            }
+            //console.log('[GUN msg] id=' + id, JSON.stringify(data));
+ //           if (this.settings.processedMessages.has(id)) {
+ //               console.log('[GUN msg] SKIP already processed');
+ //               return;
+ //           }
             this.settings.processedMessages.add(id);
 
             if (data && data.timestamp > (Date.now() - 1000 * 60 * 60)) {

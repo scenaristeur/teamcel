@@ -222,10 +222,13 @@
     <script>
         var roomData = {};
 
+        var localRelay = 'http://localhost:8765/gun';
+        var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
         var peers = [
+            ...(isLocal ? [localRelay] : []),
             "https://teamcel-relay-809f.onbelmo.uk/gun",
-            "https://teamcel.on.shiper.app/gun",
-            "https://info-opportunities-particles-faculty.trycloudflare.com/gun",
+       //     "https://teamcel.on.shiper.app/gun",
+       //     "https://info-opportunities-particles-faculty.trycloudflare.com/gun",
             "https://gun.defucc.me/gun",
             "https://relay.peer.ooo/gun"
         ];

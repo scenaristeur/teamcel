@@ -11,7 +11,8 @@
   "license": "ISC",
   "main": "main.js",
   "scripts": {
-    "dev": "concurrently --names relay,http -c blue,green \"node relay.js\" \"npx http-server . -p 4567 -a0.0.0.0 -c-1\"",
+    "dev": "npx http-server . -p 4567 -a0.0.0.0 -c-1",
+    "dev_with_relay": "concurrently --names relay,http -c blue,green \"node relay.js\" \"npx http-server . -p 4567 -a0.0.0.0 -c-1\"",
     "relay": "node relay.js",
     "start": "node relay.js",
     "build": "echo \"no build step needed\"",
