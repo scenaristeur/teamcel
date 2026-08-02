@@ -5,35 +5,28 @@
 ```
 Utilisateur → GitHub Pages (HTTPS)
                 ↓
-          Shiper (HTTPS)                ← https://teamcel.on.shiper.app/gun (stable, gratuit)
-                ↓
-          Cloudflare Tunnel (HTTPS)     ← URL dynamique, secours
-                ↓
-          Hetzner VPS :8765 (relay.js)
+          Belmo (HTTPS)                  ← https://teamcel-relay-809f.onbelmo.uk/gun (gratuit, always-on)
                 ↓
           GunDB peers (fallbacks: gun.defucc.me, relay.peer.ooo)
 ```
 
 - **Frontend** : GitHub Pages (`scenaristeur.github.io/teamcel`)
-- **Relay principal** : Shiper (gratuit, Hetzner Cloud, SSL auto) — URL stable `https://teamcel.on.shiper.app/gun`
-- **Relay secondaire** : Hetzner VPS (`157.90.162.126`), Node.js + GunDB, port 8765, via Cloudflare Tunnel
-- **DNS** : `relay.chateaudesrobots.fr` → `157.90.162.126` ✓ (propagé)
+- **Relay principal** : Belmo.io (gratuit, toujours actif, SSL auto) — URL stable `https://teamcel-relay-809f.onbelmo.uk/gun`
 - **Fallbacks** : `gun.defucc.me`, `relay.peer.ooo`
-- **Gestion des processus (VPS)** : PM2 (`teamcel-relay` = relay.js, `cloudflared` = tunnel)
+- **Backup auto-hébergé** : Hetzner VPS (`157.90.162.126`), Node.js + GunDB, port 8765, via Cloudflare Tunnel (voir plus bas)
 
-## Shiper (relay principal)
+## Belmo (relay principal)
 
-- Déployé depuis le repo GitHub `teamcel` (template Node.js)
-- Build : `npm install` / Start : `npm start` (`node relay.js`)
-- URL : `https://teamcel.on.shiper.app/gun`
-- Le relay lit `process.env.PORT` — Shiper fournit la variable
-- Plan Hobby gratuit : 0.25 vCPU, 256 MiB (suffisant pour GunDB)
+- Déployé depuis le repo GitHub `teamcel` (branch `main`), type de déploiement **`api`** (important : le type `static_site` lance `serve` au lieu de `relay.js`)
+- Build : `npm install` / Start : `node relay.js`
+- URL : `https://teamcel-relay-809f.onbelmo.uk/gun` — health check : `https://teamcel-relay-809f.onbelmo.uk/health`
+- Le relay lit `process.env.PORT` — Belmo fournit la variable
+- Conteneur en lecture seule : `relay.js` utilise `GUN_DATA_DIR` avec fallback `/tmp` (sinon `EROFS`) et `stats: false`
 
-## Pourquoi Cloudflare Tunnel (encore) ?
+## Mise à jour du peer URL dans le code
 
-Le port 80/443 de la machine est occupé par Discourse dans Docker (forum.chateaudesrobots.fr).
-Cloudflare Tunnel contourne ce problème : il établit une connexion sortante depuis le VPS vers Cloudflare,
-qui sert le HTTPS en edge. Aucun port ouvert nécessaire.
+La liste des peers est centralisée dans **`peers.js`** (utilisé par `main.js` et `stats.html`).
+Quand l'URL d'un relay change, modifier `peers.js` seulement, puis pusher sur GitHub.
 
 ## Installation existante
 
@@ -56,18 +49,7 @@ pm2 list
 ### État actuel
 - Relay tourne sous PM2, redémarre automatiquement
 - Tunnel Cloudflare également sous PM2
-- L'URL du tunnel est dans `main.js:48` et `stats.html:227`
-
-## Mise à jour du peer URL dans le code
-
-Quand le tunnel redémarre ou que l'URL change :
-
-```js
-// Dans main.js et stats.html, modifier le premier peer :
-"https://NOUVEAU-URL.trycloudflare.com/gun",
-```
-
-Pusher sur GitHub.
+- La liste des peers est centralisée dans `peers.js` (voir "Mise à jour du peer URL" ci-dessus)
 
 ## Options pour une URL stable (relay.chateaudesrobots.fr)
 
@@ -109,7 +91,7 @@ cloudflared tunnel create teamcel-relay
 pm2 delete cloudflared
 pm2 start cloudflared -- tunnel run teamcel-relay
 
-# 5. Mettre main.js et stats.html à jour :
+# 5. Mettre peers.js à jour :
 #    "https://relay.chateaudesrobots.fr/gun",
 ```
 
@@ -149,7 +131,7 @@ apt install caddy
 
 # 4. Redémarrer Caddy, arrêter cloudflared
 
-# 5. Mettre main.js et stats.html à jour :
+# 5. Mettre peers.js à jour :
 #    "https://relay.chateaudesrobots.fr/gun",
 ```
 
@@ -180,7 +162,7 @@ qui proxy vers `localhost:8765`.
 
 # 3. Proxy vers localhost:8765
 
-# 4. Mettre main.js et stats.html à jour :
+# 4. Mettre peers.js à jour :
 #    "https://relay.chateaudesrobots.fr:4433/gun",
 ```
 
@@ -196,14 +178,14 @@ Garder le tunnel Cloudflare dynamique.
 
 **Inconvénients** :
 - L'URL change si cloudflared redémarre
-- Il faut penser à mettre à jour main.js + stats.html à chaque fois
+- Il faut penser à mettre à jour `peers.js` à chaque fois
 - Pas fiable pour une mise en production réelle
 
 ---
 
 ## Résumé
 
-Le relay principal est maintenant sur Shiper (URL stable). Les options ci-dessous ne concernent plus que le relay de secours Hetzner.
+Le relay principal est maintenant sur Belmo (URL stable). Les options ci-dessous ne concernent plus que le relay de secours Hetzner.
 
 | Option | Stabilité | Effort | Risque | URL finale |
 |--------|-----------|--------|--------|------------|
@@ -212,15 +194,17 @@ Le relay principal est maintenant sur Shiper (URL stable). Les options ci-dessou
 | **C** Wildcard IONOS port non-standard | ★★★☆☆ | Moyen | Faible | `relay.chateaudesrobots.fr:4433/gun` |
 | **D** Statu quo (tunnel dynamique) | ★☆☆☆☆ | Aucun | Faible | `xxxx.trycloudflare.com/gun` |
 
-## Peer list actuelle (main.js + stats.html)
+## Peer list actuelle (peers.js)
+
+La liste des relays est centralisée dans **`peers.js`** (utilisé par `main.js` et `stats.html`).
+En local, le relay `http://localhost:8765/gun` est ajouté automatiquement en tête de liste.
 
 ```js
-[
-  "https://teamcel.on.shiper.app/gun",                             // ← relay principal (Shiper)
-  "https://info-opportunities-particles-faculty.trycloudflare.com/gun", // ← tunnel de secours
-  "https://gun.defucc.me/gun",
-  "https://relay.peer.ooo/gun"
-]
+var relayPeers = [
+  'https://teamcel-relay-809f.onbelmo.uk/gun',  // ← relay principal (Belmo, gratuit, always-on)
+  'https://gun.defucc.me/gun',                  // ← fallback public
+  'https://relay.peer.ooo/gun'                  // ← fallback public
+];
 ```
 
 ## Notes

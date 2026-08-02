@@ -44,27 +44,7 @@ var chattable = {
             return;
         }
 
-        const localRelay = 'http://localhost:8765/gun';
-        const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-
-        const defaultPeers = [
-            ...(isLocal ? [localRelay] : []),
-            "https://teamcel-relay-809f.onbelmo.uk/gun",
-            "https://gun.defucc.me/gun",
-            "https://relay.peer.ooo/gun"
-        ];
-
-        let peers = [...defaultPeers];
-        if (parameters?.peers) {
-            let customPeers = parameters.peers;
-            if (typeof customPeers === 'string') {
-                try { customPeers = JSON.parse(customPeers); }
-                catch (e) { customPeers = customPeers.split(',').map(p => p.trim()); }
-            }
-            if (Array.isArray(customPeers)) {
-                peers = [...new Set([...peers, ...customPeers])];
-            }
-        }
+        const peers = TeamCelPeers.withCustom(parameters?.peers);
 
         this.gun = Gun({ peers: peers });
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.0.1-c (2026-08-02)
+
+### Added
+- **Belmo relay** — relay GunDB toujours actif, gratuit, déployé sur Belmo.io : `https://teamcel-relay-809f.onbelmo.uk/gun` (type `api`, start `node relay.js`)
+- **`peers.js`** — configuration partagée des relays (`TeamCelPeers.defaults()` / `withCustom()`), utilisée par `main.js` et `stats.html`
+- **`style.css`** — feuille de style externe partagée (CSS extrait de `index.html`, base commune réutilisée par `stats.html`)
+- **Peer local dynamique** — `http://localhost:8765/gun` ajouté automatiquement quand on ouvre TeamCel en local (localhost/127.0.0.1)
+
+### Changed
+- **`main.js`** — utilise `TeamCelPeers.withCustom()` (suppression du bloc peers dupliqué) ; le support `?peers=...` est conservé
+- **`stats.html`** — utilise `TeamCelPeers.defaults()` + `style.css` ; le CSS spécifique (rooms, status-bar) reste inline
+- **`index.html`** — CSS inline remplacé par `<link rel="stylesheet" href="style.css">` ; charge `peers.js`
+- **`sw.js`** — cache `v3`, pré-cache de `style.css` et `peers.js`
+- **`package.json`** — scripts dev : `npm run dev` (http-server seul), `npm run dev_with_relay` (relay + http-server via concurrently), `npm run relay` (relay seul)
+
+### Fixed
+- **`relay.js`** — dossier de données configurable (`GUN_DATA_DIR`, fallback `/tmp`) pour les conteneurs en lecture seule (`EROFS`) ; `stats: false` pour éviter le spam de logs dans les stats GunDB
+
 ## 0.0.1-b (2026-07-31)
 
 ### Added

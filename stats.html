@@ -6,57 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Stats - TeamCel</title>
     <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="peers.js"></script>
     <style>
-        :root {
-            --primary: #f97316;
-            --primary-dim: #ea580c;
-            --bg: #fafaf9;
-            --card-bg: #ffffff;
-            --text: #1c1917;
-            --text-dim: #78716c;
-            --border: #e7e5e4;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html, body {
-            height: 100%;
-        }
-
-        body {
-            font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        header {
-            padding: 0.75rem 1rem;
-            padding-top: calc(0.75rem + env(safe-area-inset-top, 0px));
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .brand {
-            font-size: 1.1rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-        }
-
-        .brand span {
-            color: var(--primary);
-        }
-
         .back-link {
             font-size: 0.85rem;
             color: var(--primary);
@@ -179,23 +131,9 @@
             animation: pulse 2s infinite;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
-        }
-
-        @media (min-width: 600px) {
-            body {
-                max-width: 500px;
-                margin: 0 auto;
-                border-left: 1px solid var(--border);
-                border-right: 1px solid var(--border);
-            }
         }
     </style>
 </head>
@@ -222,16 +160,7 @@
     <script>
         var roomData = {};
 
-        var localRelay = 'http://localhost:8765/gun';
-        var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-        var peers = [
-            ...(isLocal ? [localRelay] : []),
-            "https://teamcel-relay-809f.onbelmo.uk/gun",
-       //     "https://teamcel.on.shiper.app/gun",
-       //     "https://info-opportunities-particles-faculty.trycloudflare.com/gun",
-            "https://gun.defucc.me/gun",
-            "https://relay.peer.ooo/gun"
-        ];
+        var peers = TeamCelPeers.defaults();
         var gun = Gun({ peers: peers });
         var registry = gun.get('teamcel-registry');
         var listEl = document.getElementById('roomList');
