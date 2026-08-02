@@ -1001,6 +1001,7 @@ header {
 .print-mini-sub {
     font-size: 0.85rem;
     font-weight: bold;
+    -webkit-text-stroke: 0.03em currentColor;
     color: #000;
     margin-bottom: 3mm;
 }
@@ -1016,6 +1017,7 @@ header {
     margin-bottom: 3mm;
     line-height: 1.4;
     font-weight: bold;
+    -webkit-text-stroke: 0.03em currentColor;
 }
 
 .print-mini-divider {
@@ -1030,6 +1032,7 @@ header {
     line-height: 1.8;
     color: #000;
     font-weight: bold;
+    -webkit-text-stroke: 0.03em currentColor;
 }
 
 .print-mini-steps div {
@@ -1041,6 +1044,7 @@ header {
     font-size: 0.7rem;
     color: #000;
     font-weight: bold;
+    -webkit-text-stroke: 0.03em currentColor;
 }
 
 .print-mini-title {
