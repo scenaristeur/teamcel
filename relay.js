@@ -25,7 +25,7 @@ if (!dataDir) {
 
 // multicast: false -> disable UDP socket (233.255.255.255) which can crash in Docker containers.
 // Peers are configured explicitly, so LAN discovery is not needed.
-var gun = Gun({ web: server, multicast: false, file: dataDir });
+var gun = Gun({ web: server, multicast: false, file: dataDir, stats: false });
 console.log('GunDB data dir:', dataDir);
 var PORT = process.env.PORT || 8765;
 server.listen(PORT, '0.0.0.0', function() {
