@@ -95,11 +95,9 @@ var chattable = {
         }
 
         this.roomRef.get('messages').map().on((data, id) => {
-            //console.log('[GUN msg] id=' + id, JSON.stringify(data));
- //           if (this.settings.processedMessages.has(id)) {
- //               console.log('[GUN msg] SKIP already processed');
- //               return;
- //           }
+            if (this.settings.processedMessages.has(id)) {
+                return;
+            }
             this.settings.processedMessages.add(id);
 
             if (data && data.timestamp > (Date.now() - 1000 * 60 * 60)) {

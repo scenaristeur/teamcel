@@ -159,6 +159,8 @@
 
     <script>
         var roomData = {};
+        var knownRooms = {};
+        var loading = true;
 
         var peers = TeamCelPeers.defaults();
         var gun = Gun({ peers: peers });
@@ -186,17 +188,26 @@
         }
 
         function render() {
-            var rooms = Object.keys(roomData);
+            var rooms = Object.keys(roomData).filter(function(id) {
+                return (roomData[id].users.length || 0) > 0;
+            });
             countEl.textContent = rooms.length + ' room' + (rooms.length !== 1 ? 's' : '');
 
             if (rooms.length === 0) {
-                listEl.innerHTML = '<div class="empty-state">' +
-                    '<h3>Aucune room pour le moment</h3>' +
-                    '<p>Les rooms apparaissent ici quand quelqu\'un les rejoint.<br>' +
-                    'Ouvre TeamCel et crée ou rejoins une room pour commencer.</p></div>';
+                if (loading) {
+                    listEl.innerHTML = '<div class="empty-state">' +
+                        '<h3>Chargement en cours...</h3>' +
+                        '<p>Recherche des rooms actives sur les relays...</p></div>';
+                } else {
+                    listEl.innerHTML = '<div class="empty-state">' +
+                        '<h3>Aucune room active</h3>' +
+                        '<p>Les rooms apparaissent ici quand des utilisateurs sont présents.<br>' +
+                        'Ouvre TeamCel et crée ou rejoins une room pour commencer.</p></div>';
+                }
                 return;
             }
 
+            loading = false;
             rooms.sort(function(a, b) {
                 var diff = (roomData[b].users.length || 0) - (roomData[a].users.length || 0);
                 if (diff !== 0) return diff;
@@ -236,10 +247,11 @@
             });
 
             setTimeout(function() {
-                if (!roomData[roomId]) {
-                    roomData[roomId] = { users: [] };
+                if (users.length === 0) {
+                    delete roomData[roomId];
+                } else {
+                    roomData[roomId] = { users: users };
                 }
-                roomData[roomId].users = users;
                 render();
             }, 1500);
         }
@@ -247,19 +259,24 @@
         // Watch registry for new rooms
         registry.map().on(function(val, roomId) {
             if (!val || !roomId || roomId === '_') return;
-            if (!roomData[roomId]) {
-                roomData[roomId] = { users: [] };
-                render();
+            if (!knownRooms[roomId]) {
+                knownRooms[roomId] = true;
+                setTimeout(function() {
+                    refreshRoom(roomId);
+                }, 500);
             }
-            setTimeout(function() {
-                refreshRoom(roomId);
-            }, 500);
         });
 
         // Global refresh every 15s
         setInterval(function() {
-            Object.keys(roomData).forEach(refreshRoom);
+            Object.keys(knownRooms).forEach(refreshRoom);
         }, 15000);
+
+        // Fallback if no data arrives: stop showing "loading"
+        setTimeout(function() {
+            loading = false;
+            render();
+        }, 5000);
 
         render();
     </script>
