@@ -110,6 +110,10 @@ var chattable = {
                         id: id
                     }
                 }));
+            } else if (!data) {
+                window.dispatchEvent(new CustomEvent('chattable-message-deleted', {
+                    detail: { id: id }
+                }));
             }
         });
     },

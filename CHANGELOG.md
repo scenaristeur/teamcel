@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.1-e (2026-08-02)
+
+### Added
+- **Suppression de messages** — `main.js` émet `chattable-message-deleted` quand un message est supprimé (`data === null`) ; `index.html` retire le `.msg` correspondant du DOM
+- **`stats.html`** — bouton « Rafraîchir » manuel ; affichage de l'heure de dernière activité par room ; tri par activité (dernière présence) puis par nombre d'utilisateurs
+
+### Changed
+- **`index.html`** — déduplication côté DOM : chaque message rendu porte un `data-msg-id`, et un event dont l'id est déjà affiché est ignoré (renforce la dédup Gun) ; plafond de 200 messages rendus (les plus anciens sont retirés du DOM)
+- **`sw.js`** — cache `v4`, pré-cache de `stats.html`
+- **Version** : `0.0.1-e`
+
+## 0.0.1-d (2026-08-02)
+
+### Fixed
+- **Messages en double** — déduplication par id réactivée dans `main.js` (`processedMessages`) : en multi-relay, le mesh GunDB renvoyait le même message par plusieurs chemins et `.map().on()` le re-émettait ; chaque id n'est plus traité qu'une fois par session/room
+- **`stats.html`** — les rooms à 0 utilisateur sont maintenant masquées puis purgées de `roomData` ; le re-scanner (15 s) et `knownRooms` gardent la trace des rooms du registry
+
+### Changed
+- **`stats.html`** — état de chargement : « Chargement en cours... » à l'ouverture, bascule sur « Aucune room active » après un timeout de 5 s si aucune room ne répond
+
 ## 0.0.1-c (2026-08-02)
 
 ### Added

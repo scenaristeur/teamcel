@@ -28,7 +28,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-d</small></div>
+        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-e</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -284,8 +284,13 @@
                 var container = document.getElementById('messages');
                 var isMe = msg.name === window.chattable.user.name;
 
+                if (msg.id && container.querySelector('[data-msg-id="' + msg.id + '"]')) {
+                    return;
+                }
+
                 var div = document.createElement('div');
                 div.className = 'msg ' + (isMe ? 'me' : 'other');
+                if (msg.id) div.dataset.msgId = msg.id;
 
                 var time = new Date(msg.timestamp).toLocaleTimeString('fr-FR', {
                     hour: '2-digit',
@@ -304,6 +309,17 @@
 
                 container.appendChild(div);
                 container.scrollTop = container.scrollHeight;
+
+                var msgEls = container.children;
+                while (msgEls.length > 200) {
+                    container.removeChild(msgEls[0]);
+                }
+            });
+
+            window.addEventListener('chattable-message-deleted', function(e) {
+                if (!e.detail.id) return;
+                var el = document.querySelector('[data-msg-id="' + e.detail.id + '"]');
+                if (el) el.remove();
             });
 
             function doSend() {

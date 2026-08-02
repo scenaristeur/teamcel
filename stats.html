@@ -148,6 +148,7 @@
         <div class="stats-header">
             <h2>Rooms actives</h2>
             <p id="roomCount">Recherche en cours...</p>
+            <button id="refreshBtn" style="margin-top:0.5rem;padding:0.4rem 0.8rem;font-size:0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);cursor:pointer;">Rafraîchir</button>
         </div>
         <div id="roomList"></div>
     </div>
@@ -167,6 +168,12 @@
         var registry = gun.get('teamcel-registry');
         var listEl = document.getElementById('roomList');
         var countEl = document.getElementById('roomCount');
+        var refreshBtn = document.getElementById('refreshBtn');
+
+        refreshBtn.addEventListener('click', function() {
+            refreshStatus.textContent = 'Rafraîchi à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            Object.keys(knownRooms).forEach(refreshRoom);
+        });
 
         // Restore room in back link if coming from a room
         var roomParam = new URLSearchParams(window.location.search).get('room');
@@ -209,6 +216,8 @@
 
             loading = false;
             rooms.sort(function(a, b) {
+                var tDiff = (roomData[b].lastSeen || 0) - (roomData[a].lastSeen || 0);
+                if (tDiff !== 0) return tDiff;
                 var diff = (roomData[b].users.length || 0) - (roomData[a].users.length || 0);
                 if (diff !== 0) return diff;
                 return a.localeCompare(b);
@@ -219,6 +228,9 @@
                 var id = rooms[i];
                 var data = roomData[id];
                 var userCount = data.users.length || 0;
+                var lastSeen = data.lastSeen
+                    ? new Date(data.lastSeen).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                    : '';
 
                 html += '<div class="room-card">' +
                     '<div class="room-card-left">' +
@@ -228,6 +240,7 @@
                     '<div class="room-users">' +
                         '<strong>' + userCount + '</strong>' +
                         '<span class="label">utilisateur' + (userCount !== 1 ? 's' : '') + '</span>' +
+                        (lastSeen ? '<span class="label" title="Dernière activité">· ' + lastSeen + '</span>' : '') +
                     '</div>' +
                 '</div>';
             }
@@ -237,11 +250,15 @@
         function refreshRoom(roomId) {
             var cutoff = Date.now() - 1000 * 60 * 2;
             var users = [];
+            var lastSeen = 0;
 
             gun.get('teamcel-presence').get(roomId).map().once(function(data) {
                 if (data && data.name && data.timestamp && data.timestamp > cutoff) {
                     if (users.indexOf(data.name) === -1) {
                         users.push(data.name);
+                    }
+                    if (data.timestamp > lastSeen) {
+                        lastSeen = data.timestamp;
                     }
                 }
             });
@@ -250,7 +267,7 @@
                 if (users.length === 0) {
                     delete roomData[roomId];
                 } else {
-                    roomData[roomId] = { users: users };
+                    roomData[roomId] = { users: users, lastSeen: lastSeen };
                 }
                 render();
             }, 1500);
