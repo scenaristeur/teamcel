@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>TeamCel</title>
     <link rel="icon" href="icon-192.svg" type="image/svg+xml">
     <link rel="manifest" href="manifest.json">
@@ -16,6 +16,19 @@
         (function() {
             var theme = localStorage.getItem('teamcel-theme');
             if (theme) document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <script>
+        (function() {
+            var setAppHeight = function() {
+                var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                document.documentElement.style.setProperty('--app-height', h + 'px');
+            };
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', setAppHeight);
+            }
+            window.addEventListener('resize', setAppHeight);
+            setAppHeight();
         })();
     </script>
     <script type="importmap">
@@ -34,7 +47,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-g</small></div>
+        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-h</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -576,6 +589,25 @@
             });
         }
 
+        // Keep the latest messages visible when the on-screen keyboard resizes the viewport
+        if (window.visualViewport) {
+            var kbThreshold = window.innerHeight * 0.85;
+            var chatHeader = document.querySelector('header');
+            var chatFlair = document.querySelector('.flair-bar');
+            var onKeyboardResize = function() {
+                var kbOpen = window.visualViewport.height < kbThreshold;
+                if (chatHeader) chatHeader.style.display = kbOpen ? 'none' : '';
+                if (chatFlair) chatFlair.style.display = kbOpen ? 'none' : '';
+                var msgs = document.getElementById('messages');
+                if (!msgs) return;
+                if (msgs.scrollTop + msgs.clientHeight >= msgs.scrollHeight - 40) {
+                    msgs.scrollTop = msgs.scrollHeight;
+                }
+            };
+            window.visualViewport.addEventListener('resize', onKeyboardResize);
+            onKeyboardResize();
+        }
+
         // Register service worker for PWA + "new version" update banner
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').then(function(reg) {
@@ -583,25 +615,24 @@
                     var banner = document.getElementById('updateBanner');
                     if (banner) banner.classList.add('visible');
                 }
+                function onNewVersion() {
+                    if (navigator.serviceWorker.controller) showUpdateBanner();
+                }
                 function trackInstalling(worker) {
                     if (!worker) return;
                     worker.addEventListener('statechange', function() {
-                        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-                            showUpdateBanner();
-                        }
+                        if (worker.state === 'installed') onNewVersion();
                     });
                 }
-                if (reg.waiting && navigator.serviceWorker.controller) {
-                    showUpdateBanner();
-                }
-                if (reg.installing) {
-                    trackInstalling(reg.installing);
-                }
+                if (reg.waiting) onNewVersion();
+                if (reg.installing) trackInstalling(reg.installing);
                 reg.addEventListener('updatefound', function() {
                     trackInstalling(reg.installing);
                 });
                 var refreshing = false;
+                var hadController = !!navigator.serviceWorker.controller;
                 navigator.serviceWorker.addEventListener('controllerchange', function() {
+                    if (!hadController) { hadController = true; return; }
                     if (refreshing) return;
                     refreshing = true;
                     location.reload();
@@ -611,6 +642,8 @@
                     reloadBtn.addEventListener('click', function() {
                         if (reg.waiting) {
                             reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        } else {
+                            location.reload();
                         }
                     });
                 }

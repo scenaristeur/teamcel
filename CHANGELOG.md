@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.0.1-h (2026-08-02)
+
+### Fixed
+- **Clavier mobile / PWA** — quand le clavier virtuel s'ouvre, la page rétrécit maintenant à la hauteur visible au lieu d'être masquée en bas :
+  - `index.html` / `stats.html` — meta viewport avec `interactive-widget=resizes-content` (iOS 16+ / Android : le clavier « resize » la page au lieu de la recouvrir)
+  - `index.html` — script early posant `--app-height` depuis `visualViewport.height` (fallback JS pour iOS < 16 / anciens navigateurs, réécoute `resize`)
+  - `style.css` — `html, body` passent de `height: 100%` à `100dvh` avec repli sur `var(--app-height, 100dvh)`
+  - `index.html` — au resize du `visualViewport`, la liste des messages reste ancrée en bas si on était proche du bas
+- **Espace pour les messages quand le clavier est ouvert** — le header et le bandeau « ton vibe » sont masqués (`body.kb-open`) tant que le clavier virtuel est ouvert, et réapparaissent à sa fermeture ; détection par `visualViewport.height` < 85 % de `window.innerHeight`
+
+### Changed
+- **Bandeau de mise à jour PWA** — logique affinée : détection d'un nouveau SW (`statechange → installed`, `reg.waiting` au chargement) avec bandeau ; le bouton « Recharger » demande `skipWaiting()` au SW en attente puis recharge via `controllerchange` (le premier contrôle du SW au tout premier chargement est ignoré : pas de rechargement intempestif ni de bandeau fantôme après rechargement)
+- **Version** : `0.0.1-h`
+
 ## 0.0.1-g (2026-08-02)
 
 ### Added
