@@ -421,7 +421,7 @@
                     var replyText = replyData.text || '';
                     replyHtml = '<div class="msg-reply" data-reply-id="' + window._escHtml(replyData.id) + '">' +
                         '<span class="msg-reply-author">' + window._escHtml(replyData.name) + '</span>' +
-                        '<span class="msg-reply-text">' + window._escHtml(replyText) + '</span>' +
+                        '<span class="msg-reply-text">' + window._escHtml(replyText.length > 40 ? replyText.substring(0, 40) + '…' : replyText) + '</span>' +
                     '</div>';
                 }
 
