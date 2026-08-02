@@ -94,6 +94,22 @@ var chattable = {
             });
         }
 
+        var _msgBatch = [];
+        var _batchTimer = null;
+        var _flushBatch = function() {
+            _batchTimer = null;
+            for (var i = 0; i < _msgBatch.length; i++) {
+                window.dispatchEvent(_msgBatch[i]);
+            }
+            _msgBatch = [];
+        };
+        var _queueEvent = function(type, detail) {
+            _msgBatch.push(new CustomEvent(type, { detail: detail }));
+            if (!_batchTimer) {
+                _batchTimer = requestAnimationFrame(_flushBatch);
+            }
+        };
+
         this.roomRef.get('messages').map().on((data, id) => {
             if (this.settings.processedMessages.has(id)) {
                 return;
@@ -101,19 +117,17 @@ var chattable = {
             this.settings.processedMessages.add(id);
 
             if (data && data.timestamp > (Date.now() - 1000 * 60 * 60)) {
-                window.dispatchEvent(new CustomEvent('chattable-message', {
-                    detail: {
-                        text: data.text,
-                        name: data.name,
-                        flair: data.flair,
-                        timestamp: data.timestamp,
-                        id: id
-                    }
-                }));
+                _queueEvent('chattable-message', {
+                    text: data.text,
+                    name: data.name,
+                    flair: data.flair,
+                    timestamp: data.timestamp,
+                    id: id
+                });
             } else if (!data) {
-                window.dispatchEvent(new CustomEvent('chattable-message-deleted', {
-                    detail: { id: id }
-                }));
+                _queueEvent('chattable-message-deleted', {
+                    id: id
+                });
             }
         });
     },
