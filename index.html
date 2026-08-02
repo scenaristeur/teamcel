@@ -338,12 +338,20 @@
                 window.location.search = '?room=' + encodeURIComponent(newName);
             }
 
+            function scrollToBottom() {
+                setTimeout(function() {
+                    var c = document.getElementById('messages');
+                    if (c) c.scrollTop = c.scrollHeight;
+                }, 1500);
+            }
+
             window.addEventListener('chattable-ready', function() {
                 var savedPseudo = sessionStorage.getItem('teamcel-pseudo');
                 var savedRoom = sessionStorage.getItem('teamcel-room');
                 if (savedPseudo && savedRoom === roomId) {
                     document.getElementById('flairBar').style.display = 'flex';
                     document.getElementById('flairInput').value = window.chattable.user.flair || '';
+                    scrollToBottom();
                     setTimeout(function() {
                         document.getElementById('msgInput').focus();
                     }, 100);
@@ -363,6 +371,7 @@
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('pseudoToast').style.display = 'none';
                 document.getElementById('flairBar').style.display = 'flex';
+                scrollToBottom();
                 setTimeout(function() {
                     document.getElementById('msgInput').focus();
                 }, 100);
@@ -430,7 +439,7 @@
                 container.appendChild(div);
                 if (isMe) {
                     container.scrollTop = container.scrollHeight;
-                } else if (container.scrollTop + container.clientHeight >= container.scrollHeight - 60) {
+                } else if (container.scrollTop + container.clientHeight >= container.scrollHeight - 300) {
                     container.scrollTop = container.scrollHeight;
                 }
 
