@@ -5,6 +5,7 @@ var chattable = {
         pub: null
     },
     loaded: false,
+    _localSeq: 0,
     settings: {
         initialized: false,
         room: 'public',
@@ -73,6 +74,7 @@ var chattable = {
         }
         this.settings.room = roomId;
         this.settings.processedMessages.clear();
+        this._localSeq = 0;
         this._slotMap = {};
         this.roomRef = this.gun.get('teamcel').get(roomId);
 
@@ -130,7 +132,8 @@ var chattable = {
                     name: data.name,
                     flair: data.flair,
                     timestamp: data.timestamp,
-                    id: data.seq
+                    id: data.seq,
+                    replyTo: data.replyTo || null
                 });
             } else if (!data) {
                 _queueEvent('chattable-message-deleted', { id: id });
@@ -138,22 +141,23 @@ var chattable = {
         });
     },
 
-    sendMessage(text) {
+    sendMessage(text, replyTo) {
         if (!text || typeof text !== 'string') return;
 
-        var self = this;
-        this.roomRef.get('_msgSeq').once(function(n) {
-            n = (n || 0) + 1;
-            var slot = String((n - 1) % self.MSG_LIMIT);
-            self.roomRef.get('_msgSeq').put(n);
-            self.roomRef.get('messages').get(slot).put({
-                text: text,
-                name: self.user.name,
-                flair: self.user.flair || '',
-                timestamp: Date.now(),
-                seq: n
-            });
-        });
+        this._localSeq = (this._localSeq || 0) + 1;
+        var seq = this.user.name + '-' + this._localSeq;
+        var slot = String((this._localSeq - 1) % this.MSG_LIMIT);
+        var data = {
+            text: text,
+            name: this.user.name,
+            flair: this.user.flair || '',
+            timestamp: Date.now(),
+            seq: seq
+        };
+        if (replyTo && replyTo.id) {
+            data.replyTo = JSON.stringify({ id: replyTo.id, name: replyTo.name, text: replyTo.text });
+        }
+        this.roomRef.get('messages').get(slot).put(data);
     },
 
     setFlair(string) {

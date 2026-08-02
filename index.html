@@ -104,6 +104,10 @@
 
         <div id="messages"></div>
 
+        <div class="reply-bar" id="replyBar" style="display:none;">
+            <span class="reply-bar-label" id="replyLabel"></span>
+            <button class="reply-bar-cancel" id="replyCancel" aria-label="Annuler la réponse">&times;</button>
+        </div>
         <div class="input-bar">
             <input type="text" id="msgInput" placeholder="Ecrire un message..." autocomplete="off">
             <button id="sendBtn" aria-label="Envoyer">&#9654;</button>
@@ -386,6 +390,8 @@
                 var div = document.createElement('div');
                 div.className = 'msg ' + (isMe ? 'me' : 'other');
                 if (msg.id) div.dataset.msgId = msg.id;
+                if (msg.name) div.dataset.name = msg.name;
+                div.dataset.text = msg.text.substring(0, 120);
 
                 var time = new Date(msg.timestamp).toLocaleTimeString('fr-FR', {
                     hour: '2-digit',
@@ -393,14 +399,33 @@
                 });
 
                 var flairHtml = msg.flair ? '<span class="msg-flair">' + msg.flair + '</span>' : '';
+                if (!window._escHtml) {
+                    window._escHtml = function(s) {
+                        var d = document.createElement('div');
+                        d.textContent = s;
+                        return d.innerHTML;
+                    };
+                }
+                var replyHtml = '';
+                if (msg.replyTo) {
+                    var replyData = typeof msg.replyTo === 'string' ? JSON.parse(msg.replyTo) : msg.replyTo;
+                    var replyText = replyData.text || '';
+                    replyHtml = '<div class="msg-reply" data-reply-id="' + window._escHtml(replyData.id) + '">' +
+                        '<span class="msg-reply-author">' + window._escHtml(replyData.name) + '</span>' +
+                        '<span class="msg-reply-text">' + window._escHtml(replyText.substring(0, 80)) + '</span>' +
+                    '</div>';
+                }
 
                 div.innerHTML =
                     '<div class="msg-meta">' +
-                        '<strong>' + msg.name + '</strong> ' +
+                        '<strong>' + window._escHtml(msg.name) + '</strong> ' +
                         flairHtml +
                         '<span>' + time + '</span>' +
                     '</div>' +
-                    '<div class="msg-bubble">' + linkify(msg.text) + '</div>';
+                    '<div class="msg-bubble">' +
+                        replyHtml +
+                        linkify(window._escHtml(msg.text)) +
+                    '</div>';
 
                 container.appendChild(div);
                 if (isMe) {
@@ -421,11 +446,33 @@
                 if (el) el.remove();
             });
 
+            // Reply to message
+            var _replyTo = null;
+            document.getElementById('messages').addEventListener('click', function(e) {
+                var msgEl = e.target.closest('.msg');
+                if (!msgEl) return;
+                var id = msgEl.dataset.msgId;
+                if (!id) return;
+                var name = msgEl.dataset.name || 'Inconnu';
+                var text = msgEl.dataset.text || '';
+                _replyTo = { id: id, name: name, text: text };
+                var label = document.getElementById('replyLabel');
+                label.textContent = 'Répond à ' + name + ': ' + text.substring(0, 60);
+                document.getElementById('replyBar').style.display = 'flex';
+                document.getElementById('msgInput').focus();
+            });
+            document.getElementById('replyCancel').addEventListener('click', function() {
+                _replyTo = null;
+                document.getElementById('replyBar').style.display = 'none';
+            });
+
             function doSend() {
                 var input = document.getElementById('msgInput');
                 var text = input.value.trim();
                 if (!text) return;
-                window.chattable.sendMessage(text);
+                window.chattable.sendMessage(text, _replyTo);
+                _replyTo = null;
+                document.getElementById('replyBar').style.display = 'none';
                 input.value = '';
                 input.focus();
             }
