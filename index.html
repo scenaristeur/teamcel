@@ -34,7 +34,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-f</small></div>
+        <div class="landing-brand">Team<span>Cel</span> <small>0.0.1-g</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -576,11 +576,52 @@
             });
         }
 
-        // Register service worker for PWA
+        // Register service worker for PWA + "new version" update banner
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('sw.js').then(function(reg) {
+                function showUpdateBanner() {
+                    var banner = document.getElementById('updateBanner');
+                    if (banner) banner.classList.add('visible');
+                }
+                function trackInstalling(worker) {
+                    if (!worker) return;
+                    worker.addEventListener('statechange', function() {
+                        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateBanner();
+                        }
+                    });
+                }
+                if (reg.waiting && navigator.serviceWorker.controller) {
+                    showUpdateBanner();
+                }
+                if (reg.installing) {
+                    trackInstalling(reg.installing);
+                }
+                reg.addEventListener('updatefound', function() {
+                    trackInstalling(reg.installing);
+                });
+                var refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', function() {
+                    if (refreshing) return;
+                    refreshing = true;
+                    location.reload();
+                });
+                var reloadBtn = document.getElementById('updateReloadBtn');
+                if (reloadBtn) {
+                    reloadBtn.addEventListener('click', function() {
+                        if (reg.waiting) {
+                            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        }
+                    });
+                }
+            });
         }
     </script>
+
+    <div class="update-banner" id="updateBanner">
+        <span class="update-banner-text">Nouvelle version disponible</span>
+        <button class="update-banner-btn" id="updateReloadBtn">Recharger</button>
+    </div>
 
 </body>
 

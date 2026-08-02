@@ -1,4 +1,4 @@
-var CACHE_NAME = 'teamcel-v4';
+var CACHE_NAME = 'teamcel-v5';
 var urlsToCache = [
     './index.html',
     './main.js',
@@ -16,7 +16,12 @@ self.addEventListener('install', function(event) {
             return cache.addAll(urlsToCache).catch(function() {});
         })
     );
-    self.skipWaiting();
+});
+
+self.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 self.addEventListener('activate', function(event) {

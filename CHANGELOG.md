@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.1-g (2026-08-02)
+
+### Added
+- **Bandeau « Nouvelle version disponible »** — quand le service worker détecte une nouvelle version de l'appli (nouveau SW installé pendant la session, ou déjà en attente au chargement), un bandeau s'affiche avec un bouton « Recharger » ; le rechargement active la nouvelle version (`postMessage` → `skipWaiting()` → `controllerchange` → `reload`)
+- **`index.html`** — logique complète d'enregistrement du service worker : détection de `reg.waiting` / `reg.installing` / `updatefound`, bandeau `.update-banner` + bouton `#updateReloadBtn` (styles dans `style.css`, cohérents avec les thèmes)
+
+### Changed
+- **`sw.js`** — le `skipWaiting()` automatique à l'install est remplacé par un écouteur de message `SKIP_WAITING` (le nouveau SW attend l'accord de l'utilisateur avant de prendre le contrôle) ; cache `v5`
+- **Version** : `0.0.1-g`
+
 ## 0.0.1-f (2026-08-02)
 
 ### Added
