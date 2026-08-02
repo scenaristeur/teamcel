@@ -403,7 +403,11 @@
                     '<div class="msg-bubble">' + linkify(msg.text) + '</div>';
 
                 container.appendChild(div);
-                container.scrollTop = container.scrollHeight;
+                if (isMe) {
+                    container.scrollTop = container.scrollHeight;
+                } else if (container.scrollTop + container.clientHeight >= container.scrollHeight - 60) {
+                    container.scrollTop = container.scrollHeight;
+                }
 
                 var msgEls = container.children;
                 while (msgEls.length > 200) {
