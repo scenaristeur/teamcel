@@ -75,10 +75,6 @@ var chattable = {
         this.settings.room = roomId;
         this.settings.processedMessages.clear();
         this._localSeq = 0;
-        this._keyToSeq = {};
-        this._seqToKey = {};
-        this._msgTimestamps = {};
-        this._pruneTimer = null;
         this.roomRef = this.gun.get('teamcel').get(roomId);
 
         // Register room in global registry (separate top-level key)
@@ -119,29 +115,12 @@ var chattable = {
 
         var self = this;
         this.roomRef.get('messages').map().on((data, gunId) => {
-            if (!data) {
-                var seq = self._keyToSeq[gunId];
-                if (seq) {
-                    delete self._keyToSeq[gunId];
-                    delete self._seqToKey[seq];
-                    delete self._msgTimestamps[seq];
-                    _queueEvent('chattable-message-deleted', { id: seq });
-                }
-                return;
-            }
-            if (!data.seq) return;
-
-            self._keyToSeq[gunId] = data.seq;
-            self._seqToKey[data.seq] = gunId;
-
+            if (!data) return;
+            if (!data.seq || !data.timestamp) return;
             if (self.settings.processedMessages.has(data.seq)) return;
             self.settings.processedMessages.add(data.seq);
 
-            if (data.timestamp) {
-                self._msgTimestamps[data.seq] = data.timestamp;
-            }
-
-            if (data.timestamp && data.timestamp > (Date.now() - 1000 * 60 * 60)) {
+            if (data.timestamp > (Date.now() - 1000 * 60 * 60)) {
                 _queueEvent('chattable-message', {
                     text: data.text,
                     name: data.name,
@@ -151,40 +130,13 @@ var chattable = {
                     replyTo: data.replyTo || null
                 });
             }
-
-            self._schedulePrune();
         });
-    },
-
-    _schedulePrune() {
-        if (this._pruneTimer) clearTimeout(this._pruneTimer);
-        var self = this;
-        this._pruneTimer = setTimeout(function() {
-            self._pruneTimer = null;
-            self._pruneMessages();
-        }, 2000);
-    },
-
-    _pruneMessages() {
-        var ids = Object.keys(this._msgTimestamps);
-        if (ids.length <= this.MSG_LIMIT) return;
-        var self = this;
-        ids.sort(function(a, b) {
-            return (self._msgTimestamps[a] || 0) - (self._msgTimestamps[b] || 0);
-        });
-        var toRemove = ids.slice(0, ids.length - this.MSG_LIMIT);
-        for (var i = 0; i < toRemove.length; i++) {
-            var seq = toRemove[i];
-            var gunKey = this._seqToKey[seq];
-            if (gunKey) {
-                this.roomRef.get('messages').get(gunKey).put(null);
-            }
-        }
     },
 
     sendMessage(text, replyTo) {
         if (!text || typeof text !== 'string') return;
 
+        var self = this;
         this._localSeq = (this._localSeq || 0) + 1;
         var data = {
             text: text,
@@ -196,7 +148,23 @@ var chattable = {
         if (replyTo && replyTo.id) {
             data.replyTo = JSON.stringify({ id: replyTo.id, name: replyTo.name, text: replyTo.text });
         }
-        this.roomRef.get('messages').set(data);
+
+        var roomMsgs = this.roomRef.get('messages');
+        var entries = [];
+        roomMsgs.map().once(function(v, k) {
+            if (v && v.timestamp) entries.push({ id: k, ts: v.timestamp });
+        });
+        setTimeout(function() {
+            if (entries.length >= self.MSG_LIMIT) {
+                entries.sort(function(a, b) { return a.ts - b.ts; });
+                var toRemove = entries.slice(0, entries.length - self.MSG_LIMIT + 1);
+                for (var i = 0; i < toRemove.length; i++) {
+                    roomMsgs.get(toRemove[i].id).put(null);
+                }
+            }
+            var key = Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 4);
+            roomMsgs.get(key).put(data);
+        }, 500);
     },
 
     setFlair(string) {
