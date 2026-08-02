@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.16 (2026-08-02)
+
+### Fixed
+- **Synchro multi-utilisateurs** — la méthode de limitation des messages est simplifiée : avant d'écrire, on compte les messages avec `.map().once()`, on supprime les plus vieux si > 100, puis on ajoute le nouveau avec `.get(key).put(data)` (clé unique timestamp+random) ; les messages des autres utilisateurs ne sont plus perdus
+- **Scroll en bas à l'ouverture** — `scrollToBottom()` est appelé 1,5s après l'entrée dans une room, que ce soit au premier passage (après le pseudo) ou au retour (pseudo sauvegardé)
+- **Seuil de scroll pour les autres messages** — passe de 60 à 300px : si l'utilisateur est dans les 300px du bas, un nouveau message des autres le fait descendre en bas
+- **Troncature du texte cité** — le `msg-reply-text` dans la bulle est limité à 40 caractères avec `…` ; le label « Répond à X: … » aussi quand > 60 caractères
+- **Logs SW** — `console.log` ajoutés dans `sw.js` (install, activate, message) et dans le code d'enregistrement pour debug du cycle de mise à jour PWA
+
+### Changed
+- **Version** : `0.0.16`
+
 ## 0.0.15 (2026-08-02)
 
 ### Fixed
