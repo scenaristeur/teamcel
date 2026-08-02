@@ -10,6 +10,7 @@ var chattable = {
         room: 'public',
         processedMessages: new Set()
     },
+    MSG_LIMIT: 100,
     gun: null,
     roomRef: null,
 
@@ -72,6 +73,7 @@ var chattable = {
         }
         this.settings.room = roomId;
         this.settings.processedMessages.clear();
+        this._slotMap = {};
         this.roomRef = this.gun.get('teamcel').get(roomId);
 
         // Register room in global registry (separate top-level key)
@@ -111,23 +113,27 @@ var chattable = {
         };
 
         this.roomRef.get('messages').map().on((data, id) => {
-            if (this.settings.processedMessages.has(id)) {
-                return;
-            }
-            this.settings.processedMessages.add(id);
+            if (!data || !data.seq) return;
 
-            if (data && data.timestamp > (Date.now() - 1000 * 60 * 60)) {
+            var oldSeq = this._slotMap[id];
+            this._slotMap[id] = data.seq;
+            if (oldSeq && oldSeq !== data.seq) {
+                _queueEvent('chattable-message-deleted', { id: oldSeq });
+            }
+
+            if (this.settings.processedMessages.has(data.seq)) return;
+            this.settings.processedMessages.add(data.seq);
+
+            if (data.timestamp > (Date.now() - 1000 * 60 * 60)) {
                 _queueEvent('chattable-message', {
                     text: data.text,
                     name: data.name,
                     flair: data.flair,
                     timestamp: data.timestamp,
-                    id: id
+                    id: data.seq
                 });
             } else if (!data) {
-                _queueEvent('chattable-message-deleted', {
-                    id: id
-                });
+                _queueEvent('chattable-message-deleted', { id: id });
             }
         });
     },
@@ -135,11 +141,18 @@ var chattable = {
     sendMessage(text) {
         if (!text || typeof text !== 'string') return;
 
-        this.roomRef.get('messages').set({
-            text: text,
-            name: this.user.name,
-            flair: this.user.flair || '',
-            timestamp: Date.now()
+        var self = this;
+        this.roomRef.get('_msgSeq').once(function(n) {
+            n = (n || 0) + 1;
+            var slot = String((n - 1) % self.MSG_LIMIT);
+            self.roomRef.get('_msgSeq').put(n);
+            self.roomRef.get('messages').get(slot).put({
+                text: text,
+                name: self.user.name,
+                flair: self.user.flair || '',
+                timestamp: Date.now(),
+                seq: n
+            });
         });
     },
 

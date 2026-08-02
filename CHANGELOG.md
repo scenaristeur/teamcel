@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.14 (2026-08-02)
+
+### Added
+- **`gun/lib/yson.js`** — chargé après gun.js (faster YSON parser côté client) élimine le warning « JSON blocking CPU detected »
+- **RAF-throttle des événements message** — les `chattable-message` sont batchés par `requestAnimationFrame` pour éviter le warning « syncing 1K+ records a second »
+- **Ring buffer messages (100 max dans GunDB)** — `main.js` : au lieu de `.set()` qui accumule sans fin, chaque envoi lit un compteur `_msgSeq` et écrit dans un slot cyclique 0-99 ; les plus vieux messages sont automatiquement écrasés sans laisser de data fantôme dans le graphe
+
+### Changed
+- **Version** : passage à `0.0.14` (numérotation sémantique, abandon des suffixes letter)
+
 ## 0.0.1-h (2026-08-02)
 
 ### Fixed
