@@ -1,4 +1,4 @@
-var CACHE_NAME = 'teamcel-v7';
+var CACHE_NAME = 'teamcel-v8';
 var urlsToCache = [
     './index.html',
     './main.js',

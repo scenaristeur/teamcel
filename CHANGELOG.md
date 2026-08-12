@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.21 (2026-08-12)
+
+### Changed
+- **Réouverture directe** — à l'ouverture de l'app, la dernière room et le dernier pseudo sont restaurés (persistés en `localStorage` `teamcel-last-room` / `teamcel-last-pseudo`) et le chat s'ouvre directement, sans passer par la landing. Le clic sur le logo (retour à l'accueil) empêche la réouverture automatique pour cette navigation (`teamcel-skip-autoload`).
+- **sw.js** — cache passé en `teamcel-v8`.
+- **Version** : `0.0.21`
+
 ## 0.0.20 (2026-08-12)
 
 ### Changed

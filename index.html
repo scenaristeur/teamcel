@@ -72,7 +72,7 @@
         </div>
         <a class="landing-stats-link" href="stats.html" data-i18n="landing.stats">Stats des rooms</a>
         <a class="landing-about-link" href="presentation.html" data-i18n="landing.about">En savoir plus sur TeamCel</a>
-        <small class="landing-version">v0.0.20</small>
+        <small class="landing-version">v0.0.21</small>
     </div>
 
     <!-- CHAT SCREEN -->
@@ -284,16 +284,34 @@
             localStorage.setItem('teamcel-recent', JSON.stringify(recent));
         }
 
-        if (roomFromUrl) {
-            // Direct access with room — show chat
-            landingScreen.style.display = 'none';
-            chatScreen.style.display = 'flex';
-            initChat(roomFromUrl);
-        } else {
-            // No room — show landing
+        function showLanding() {
             landingScreen.style.display = 'flex';
             chatScreen.style.display = 'none';
             renderRecentRooms();
+        }
+
+        var skipAutoLoad = sessionStorage.getItem('teamcel-skip-autoload');
+        sessionStorage.removeItem('teamcel-skip-autoload');
+        var lastRoom = localStorage.getItem('teamcel-last-room');
+        var lastPseudo = localStorage.getItem('teamcel-last-pseudo');
+
+        if (roomFromUrl) {
+            // Direct access with room — show chat
+            if (lastPseudo && !sessionStorage.getItem('teamcel-pseudo')) {
+                sessionStorage.setItem('teamcel-pseudo', lastPseudo);
+            }
+            landingScreen.style.display = 'none';
+            chatScreen.style.display = 'flex';
+            initChat(roomFromUrl);
+        } else if (!skipAutoLoad && lastRoom) {
+            // Reopen: restore last room + pseudo directly, skip landing
+            if (lastPseudo) sessionStorage.setItem('teamcel-pseudo', lastPseudo);
+            landingScreen.style.display = 'none';
+            chatScreen.style.display = 'flex';
+            initChat(lastRoom);
+        } else {
+            // First visit / explicit exit — show landing
+            showLanding();
         }
 
         function renderRecentRooms() {
@@ -326,6 +344,7 @@
             badge.contentEditable = true;
             document.getElementById('statsLink').href = 'stats.html?room=' + encodeURIComponent(roomId);
             sessionStorage.setItem('teamcel-room', roomId);
+            localStorage.setItem('teamcel-last-room', roomId);
 
             badge.addEventListener('blur', function() {
                 finishRename(roomId);
@@ -366,6 +385,7 @@
                     return;
                 }
                 document.getElementById('pseudoDisplay').textContent = savedPseudo || window.chattable.user.name;
+                localStorage.setItem('teamcel-last-pseudo', window.chattable.user.name || savedPseudo || '');
                 document.getElementById('overlay').style.display = 'block';
                 document.getElementById('pseudoToast').style.display = 'block';
             });
@@ -375,10 +395,12 @@
                 if (val) {
                     window.chattable.user.name = val;
                     sessionStorage.setItem('teamcel-pseudo', val);
+                    localStorage.setItem('teamcel-last-pseudo', val);
                 }
                 document.getElementById('overlay').style.display = 'none';
                 document.getElementById('pseudoToast').style.display = 'none';
                 document.getElementById('flairBar').style.display = 'flex';
+                document.getElementById('flairInput').value = window.chattable.user.flair || '';
                 scrollToBottom();
                 setTimeout(function() {
                     document.getElementById('msgInput').focus();
@@ -391,6 +413,7 @@
 
             document.querySelector('.brand').addEventListener('click', function() {
                 sessionStorage.removeItem('teamcel-room');
+                sessionStorage.setItem('teamcel-skip-autoload', '1');
                 window.location.search = '';
             });
 
