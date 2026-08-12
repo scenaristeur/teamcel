@@ -34,9 +34,10 @@
     </script>
     <script type="importmap">
     {
-        "imports": {
-            "qrcode": "https://esm.sh/qrcode@1.5.4"
-        }
+    "imports": {
+        "qrcode": "https://esm.sh/qrcode@1.5.4",
+        "register-service-worker": "https://esm.sh/register-service-worker"
+    }
     }
     </script>
     <link rel="stylesheet" href="style.css">
@@ -48,7 +49,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.17</small></div>
+        <div class="landing-brand">Team<span>Cel</span> <small>0.0.18</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -126,6 +127,12 @@
     <!-- SHARE MODAL -->
     <div class="overlay" id="shareOverlay" style="display:none;"></div>
     <div class="share-modal" id="shareModal" style="display:none;">
+        <button class="share-modal-close" id="closeShare" aria-label="Fermer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
         <h2>Partager cette room</h2>
         <div class="clipboard-info" id="clipboardInfo" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.6rem;margin-bottom:0.75rem;font-size:0.78rem;color:#166534;text-align:left;">
             L'URL a ete copiee dans le presse-papier. Colle-la avec <b>Ctrl+V</b> dans n'importe quelle appli pour la partager !
@@ -133,11 +140,17 @@
         <canvas id="qrCanvas"></canvas>
         <div class="share-url" id="shareUrl"></div>
         <div class="share-actions">
-            <button class="btn-close-share" id="closeShare">Fermer</button>
             <button class="btn-native-share" id="nativeShareBtn" style="display:none;">Partager</button>
-            <button class="btn-print" id="printMiniBtn">58mm</button>
-            <button class="btn-print" id="printCardBtn">Carte</button>
+        </div>
+        <div class="share-section-label">Imprimer</div>
+        <div class="share-actions">
             <button class="btn-print" id="printA4Btn">A4</button>
+            <button class="btn-print" id="printCardBtn">Carte</button>
+            <button class="btn-print" id="printMiniBtn">58mm</button>
+        </div>
+        <div class="share-section-label">Commander une impression</div>
+        <div class="share-actions">
+            <a class="btn-order" id="orderMailBtn" href="#">Par mail</a>
         </div>
     </div>
 
@@ -153,7 +166,7 @@
         <div class="print-a4" id="printA4">
             <div class="print-a4-header">
                 <h1>TeamCel</h1>
-                <p>Le chat anonyme du lieu</p>
+                <p>Le chat anonyme</p>
             </div>
             <div class="print-a4-body">
                 <div class="print-a4-qr">
@@ -161,18 +174,7 @@
                 </div>
                 <div class="print-a4-url" id="printUrlA4"></div>
                 <div class="print-a4-steps">
-                    <div class="print-a4-step">
-                        <div class="print-a4-step-num">1</div>
-                        <p>Scan le QR code avec ton telephone</p>
-                    </div>
-                    <div class="print-a4-step">
-                        <div class="print-a4-step-num">2</div>
-                        <p>Un pseudo t'est attribue automatiquement</p>
-                    </div>
-                    <div class="print-a4-step">
-                        <div class="print-a4-step-num">3</div>
-                        <p>Ecris ton message et rencontre du monde</p>
-                    </div>
+                    <div class="print-a4-slogan">Scan, Discute, Rencontre</div>
                 </div>
             </div>
             <div class="print-a4-footer">
@@ -192,9 +194,7 @@
             <div class="print-mini-url" id="printUrlMini"></div>
             <hr class="print-mini-divider">
             <div class="print-mini-steps">
-                <div>1. Scan le QR code</div>
-                <div>2. Pseudo automatique</div>
-                <div>3. Discute et rencontre</div>
+                <div>Scan, Discute, Rencontre</div>
             </div>
             <div class="print-mini-footer">teamcel.app</div>
         </div>
@@ -202,6 +202,7 @@
 
     <script type="module">
         import QRCode from 'qrcode';
+        import { register as registerServiceWorker } from 'register-service-worker';
 
         const urlParams = new URLSearchParams(window.location.search);
         const roomFromUrl = urlParams.get('room');
@@ -512,6 +513,18 @@
             document.getElementById('shareOverlay').style.display = 'block';
             document.getElementById('shareModal').style.display = 'block';
 
+            var orderBody = 'Bonjour, je souhaiterais connaitre les modalités pour pouvoir faire imprimer les QRCodes Teamcel pour un lieu/événement.\n\n' +
+                'Voici ce qu\'il me faudrait :\n' +
+                '- impressions A4 : ,\n' +
+                '- cartes : ,\n' +
+                '- 58mm : ,\n' +
+                '- autocollants : ,\n' +
+                '- autres (tableau grand format, peinture murale...) : \n\n' +
+                'Room : ' + url;
+            document.getElementById('orderMailBtn').href = 'mailto:scenaristeur@gmail.com?subject=' +
+                encodeURIComponent('Commande d\'impressions pour Teamcel') +
+                '&body=' + encodeURIComponent(orderBody);
+
             QRCode.toCanvas(document.getElementById('qrCanvas'), url, {
                 width: 200,
                 margin: 2,
@@ -584,7 +597,7 @@
             var url = getShareUrl(currentRoom);
             var qrSrc = cachedPrintDataUrl || '';
             var title = 'TeamCel';
-            var subtitle = 'Le chat anonyme du lieu';
+            var subtitle = 'Le chat anonyme';
 
             var html = '<html><head><title>' + title + '</title>' +
                 '<meta name="viewport" content="width=device-width, initial-scale=1">' +
@@ -595,31 +608,50 @@
                     '<h1 style="font-size:42px;font-weight:800;color:#fff;margin:0">'+title+'</h1>' +
                     '<p style="font-size:16px;color:rgba(255,255,255,0.85);margin:0">'+subtitle+'</p></div>' +
                     '<div style="padding:30px 60px;text-align:center">' +
-                    '<img src="'+qrSrc+'" style="border:2px solid #e7e5e4;border-radius:8px;padding:10px;background:#fff" width="200"><br>' +
+                    '<div style="font-size:34px;font-weight:900;color:#1c1917;word-break:break-word;margin-bottom:24px">'+currentRoom+'</div>' +
+                    '<img src="'+qrSrc+'" style="border:2px solid #e7e5e4;border-radius:8px;padding:10px;background:#fff" width="220"><br>' +
                     '<div style="font-family:monospace;font-size:12px;background:#f5f5f4;padding:8px 16px;border-radius:4px;margin:16px auto;display:inline-block;word-break:break-all;color:#78716c">'+url+'</div>' +
-                    '<div style="display:flex;gap:30px;justify-content:center;margin-top:20px">' +
-                    '<div><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">1</div><p style="font-size:12px;margin:0;color:#44403c">Scan le QR code</p></div>' +
-                    '<div><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">2</div><p style="font-size:12px;margin:0;color:#44403c">Pseudo automatique</p></div>' +
-                    '<div><div style="width:36px;height:36px;border-radius:50%;background:#f97316;color:#fff;font-weight:700;font-size:16px;line-height:36px;margin:0 auto 8px">3</div><p style="font-size:12px;margin:0;color:#44403c">Discute et rencontre</p></div>' +
-                    '</div></div>' +
+                    '<div style="font-size:20px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;margin-top:20px">Scan, Discute, Rencontre</div>' +
+                    '</div>' +
                     '<div style="border-top:1px solid #e7e5e4;padding:14px 50px;font-size:10px;color:#a8a29e">teamcel.app &mdash; Chat anonyme</div>';
 
             } else if (type === 'card') {
-                for (var i = 0; i < 8; i++) {
-                    html += '<div style="display:inline-flex;width:48%;height:120px;border:1px solid #e7e5e4;margin:2px;padding:8px;text-align:left;vertical-align:top;box-sizing:border-box">' +
-                        '<div style="flex:1"><div style="font-size:16px;font-weight:800;color:#f97316">Team<span style="color:#1c1917">Cel</span></div>' +
-                        '<div style="font-size:8px;color:#44403c;margin-top:4px">1. Scan le QR code<br>2. Pseudo automatique<br>3. Discute et rencontre</div></div>' +
-                        '<div><img src="'+qrSrc+'" width="50"></div></div>';
+                html += '<style>' +
+                    '@page{size:A4 portrait;margin:0}' +
+                    'body{margin:0;padding:0}' +
+                    '.grid{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(8,1fr);height:100vh;width:100%}' +
+                    '.card{box-sizing:border-box;border:1px solid #e7e5e4;display:flex;align-items:stretch;text-align:left;padding:12px;overflow:hidden}' +
+                    '.card-info{flex:1;min-width:0;display:flex;flex-direction:column;padding-right:10px}' +
+                    '.card-brand{font-size:14px;font-weight:800;color:#f97316;white-space:nowrap}' +
+                    '.card-brand span{color:#1c1917}' +
+                    '.card-room{flex:1;display:flex;align-items:center;font-size:26px;font-weight:900;color:#1c1917;line-height:1;word-break:break-word;margin:6px 0}' +
+                    '.card-url{font-family:monospace;font-size:6px;color:#78716c;word-break:break-all;line-height:1.1}' +
+                    '.card-steps{font-size:7px;color:#44403c;margin-top:4px;line-height:1.3}' +
+                    '.card-qr{height:100%;width:auto;flex-shrink:0;margin:0}' +
+                    '</style>' +
+                    '<div class="grid">';
+                for (var c = 0; c < 16; c++) {
+                    html += '<div class="card">' +
+                        '<div class="card-info">' +
+                            '<div class="card-brand">Team<span>Cel</span></div>' +
+                            '<div class="card-room">'+currentRoom+'</div>' +
+                            '<div class="card-url">'+url+'</div>' +
+                            '<div class="card-steps">Scan, Discute, Rencontre</div>' +
+                        '</div>' +
+                        '<img class="card-qr" src="'+qrSrc+'">' +
+                    '</div>';
                 }
+                html += '</div>';
 
             } else {
                 html += '<div style="width:200px;margin:0 auto;font-family:Courier New,monospace">' +
                     '<h2 style="margin:0">'+title+'</h2>' +
                     '<p style="font-size:10px;color:#78716c">'+subtitle+'</p>' +
+                    '<div style="font-size:16px;font-weight:900;color:#1c1917;word-break:break-all;margin:6px 0">'+currentRoom+'</div>' +
                     '<img src="'+qrSrc+'" width="140"><br>' +
                     '<div style="font-size:8px;word-break:break-all;color:#78716c;margin:10px 0">'+url+'</div>' +
                     '<hr>' +
-                    '<div style="font-size:8px;text-align:left;color:#44403c">1. Scan le QR code<br>2. Pseudo automatique<br>3. Discute et rencontre</div>' +
+                    '<div style="font-size:9px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;text-align:center;margin:8px 0">Scan, Discute, Rencontre</div>' +
                     '<p style="font-size:7px;color:#a8a29e">teamcel.app</p></div>';
             }
 
@@ -656,10 +688,12 @@
             var kbThreshold = window.innerHeight * 0.85;
             var chatHeader = document.querySelector('header');
             var chatFlair = document.querySelector('.flair-bar');
+            var flairInputEl = document.getElementById('flairInput');
             var onKeyboardResize = function() {
                 var kbOpen = window.visualViewport.height < kbThreshold;
-                if (chatHeader) chatHeader.style.display = kbOpen ? 'none' : '';
-                if (chatFlair) chatFlair.style.display = kbOpen ? 'none' : '';
+                var flairFocused = document.activeElement === flairInputEl;
+                if (chatHeader) chatHeader.style.display = (kbOpen && !flairFocused) ? 'none' : '';
+                if (chatFlair) chatFlair.style.display = (kbOpen && !flairFocused) ? 'none' : '';
                 var msgs = document.getElementById('messages');
                 if (!msgs) return;
                 if (msgs.scrollTop + msgs.clientHeight >= msgs.scrollHeight - 40) {
@@ -670,77 +704,33 @@
             onKeyboardResize();
         }
 
-        // Register service worker for PWA + "new version" update banner
+        // PWA update banner — same behaviour as the reference brain project
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(function(reg) {
-                console.log('[SW] registered - state:', reg.active?.state, 'waiting:', !!reg.waiting, 'installing:', !!reg.installing);
+            var refreshing = false;
+            var hadController = !!navigator.serviceWorker.controller;
+            navigator.serviceWorker.addEventListener('controllerchange', function() {
+                if (!hadController) { hadController = true; return; }
+                if (refreshing) return;
+                refreshing = true;
+                window.location.reload();
+            });
 
-                function showUpdateBanner() {
-                    var banner = document.getElementById('updateBanner');
-                    if (banner) banner.classList.add('visible');
-                    console.log('[SW] update banner shown');
-                }
-                function onNewVersion(silent) {
-                    if (navigator.serviceWorker.controller) {
-                        showUpdateBanner();
-                    } else if (!silent) {
-                        console.log('[SW] new version installed (first install, no controller yet)');
-                    }
-                }
-                function trackInstalling(worker) {
-                    if (!worker) return;
-                    worker.addEventListener('statechange', function() {
-                        console.log('[SW] installing worker state:', worker.state);
-                        if (worker.state === 'installed') onNewVersion();
+            registerServiceWorker('sw.js', {
+                registered: function(reg) {
+                    document.getElementById('updateReloadBtn').addEventListener('click', function() {
+                        if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        else window.location.reload();
                     });
+                },
+                updated: function() {
+                    document.getElementById('updateBanner').classList.add('visible');
+                },
+                error: function(err) {
+                    console.error('[SW] registration error:', err);
                 }
-
-                console.log('[SW] hadController:', !!navigator.serviceWorker.controller);
-                if (reg.waiting) {
-                    console.log('[SW] already waiting');
-                    onNewVersion();
-                }
-                if (reg.installing) {
-                    console.log('[SW] installing on register');
-                    trackInstalling(reg.installing);
-                }
-                reg.addEventListener('updatefound', function() {
-                    console.log('[SW] updatefound');
-                    trackInstalling(reg.installing);
-                    if (reg.waiting) {
-                        console.log('[SW] already waiting after updatefound');
-                        onNewVersion();
-                    }
-                });
-                var refreshing = false;
-                var hadController = !!navigator.serviceWorker.controller;
-                console.log('[SW] hadController:', hadController);
-                setTimeout(function() {
-                    console.log('[SW] manual update check');
-                    reg.update();
-                }, 1000);
-                navigator.serviceWorker.addEventListener('controllerchange', function() {
-                    console.log('[SW] controllerchange, hadController was:', hadController, 'refreshing:', refreshing);
-                    if (!hadController) { hadController = true; return; }
-                    if (refreshing) return;
-                    refreshing = true;
-                    location.reload();
-                });
-                var reloadBtn = document.getElementById('updateReloadBtn');
-                if (reloadBtn) {
-                    reloadBtn.addEventListener('click', function() {
-                        console.log('[SW] reload button clicked, waiting:', !!reg.waiting);
-                        if (reg.waiting) {
-                            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-                        } else {
-                            location.reload();
-                        }
-                    });
-                }
-            }).catch(function(err) {
-                console.error('[SW] registration error:', err);
             });
         }
+
     </script>
 
     <div class="update-banner" id="updateBanner">

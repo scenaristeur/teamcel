@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.0.18 (2026-08-12)
+
+### Fixed
+- **Clavier PWA sur le champ « vibe »** — le handler `onKeyboardResize` cachait `.flair-bar` dès l'ouverture du clavier, ce qui faisait perdre le focus à l'input et fermait le clavier aussitôt (saisie impossible en PWA). Il ne cache plus ni le header ni la barre de vibe quand c'est l'input vibe qui a le focus
+- **Bannière « Nouvelle version disponible »** — l'enregistrement du service worker passe par la librairie `register-service-worker` (chargée via l'importmap `esm.sh`, comme `qrcode`) : la bannière s'affiche quand un nouveau service worker est installé alors que la page est déjà contrôlée (hook `updated`), le bouton « Recharger » envoie `SKIP_WAITING` puis recharge via `controllerchange`
+
+### Changed
+- **Modal « Partager cette room »** — bouton « Fermer » remplacé par une croix en haut à droite ; boutons réorganisés en deux sections : « Imprimer » (A4, Carte, 58mm) et « Commander une impression » (« Par mail » → `mailto:scenaristeur@gmail.com` avec sujet et corps de commande pré-remplis + l'URL de la room)
+- **Impression Carte de visite** — grille CSS plein-page : 16 cartes (8 lignes × 2 colonnes) remplissant toute la hauteur A4 ; ajout de la ligne d'URL avec la chatroom ; QR code (`height:100%`) qui occupe toute la hauteur de la carte ; nom de la room mis en évidence en gros (26px, `font-weight:900`)
+- **Impression A4** — nom de la room mis en évidence en gros au-dessus du QR code
+- **Impression 58mm** — nom de la room ajouté en gras au-dessus du QR code
+- **Sous-titre des impressions** — « Le chat anonyme du lieu » → « Le chat anonyme » (plus de redondance, le nom de la room étant affiché à part)
+- **Instructions des impressions** — « 1. Scan / 2. Pseudo / 3. Discute » remplacées partout par le slogan « Scan, Discute, Rencontre »
+- **Lisibilité N&B du slogan** — liseret noir (`-webkit-text-stroke: 0.5px #1c1917`) autour des lettres orange pour rester lisible en impression noir et blanc
+- **Version** : `0.0.18`
+
 ## 0.0.17 (2026-08-02)
 
 ### Added

@@ -706,6 +706,36 @@ header {
     margin-bottom: 1rem;
 }
 
+.share-modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.share-modal-close svg {
+    display: block;
+}
+
+.share-section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 1rem 0 0.5rem;
+}
+
 .share-modal canvas {
     border-radius: 8px;
     margin-bottom: 0.75rem;
@@ -730,7 +760,8 @@ header {
     flex-wrap: wrap;
 }
 
-.share-actions button {
+.share-actions button,
+.share-actions a {
     flex: 1;
     min-width: 60px;
     padding: 0.65rem;
@@ -739,9 +770,11 @@ header {
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
-.share-actions button:active {
+.share-actions button:active,
+.share-actions a:active {
     transform: scale(0.98);
 }
 
@@ -753,6 +786,15 @@ header {
 .btn-native-share {
     background: #2563eb;
     color: white;
+}
+
+.btn-order {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    background: var(--text);
+    color: var(--bg);
+    flex: 1;
 }
 
 .btn-close-share {
@@ -867,6 +909,15 @@ header {
     gap: 10mm;
     margin-bottom: 10mm;
     max-width: 480px;
+}
+
+.print-a4-slogan {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f97316;
+    -webkit-text-stroke: 0.5px #1c1917;
+    text-align: center;
+    margin: 0 auto;
 }
 
 .print-a4-step {
