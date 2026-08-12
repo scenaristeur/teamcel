@@ -1,4 +1,20 @@
 :root {
+    --primary: #10b981;
+    --primary-dim: #059669;
+    --bg: #ecfdf5;
+    --card-bg: #ffffff;
+    --text: #064e3b;
+    --text-dim: #6b7280;
+    --border: #d1fae5;
+    --bubble-self: #10b981;
+    --bubble-self-text: #ffffff;
+    --bubble-other: #d1fae5;
+    --bubble-other-text: #064e3b;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===== THEMES ===== */
+html[data-theme="orange"] {
     --primary: #f97316;
     --primary-dim: #ea580c;
     --bg: #fafaf9;
@@ -10,10 +26,8 @@
     --bubble-self-text: #ffffff;
     --bubble-other: #f5f5f4;
     --bubble-other-text: #1c1917;
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* ===== THEMES ===== */
 html[data-theme="ocean"] {
     --primary: #0ea5e9;
     --primary-dim: #0284c7;
@@ -896,7 +910,7 @@ header {
 }
 
 .print-a4-header {
-    background: #f97316;
+    background: var(--primary);
     padding: 18mm 20mm 14mm;
     text-align: center;
 }
@@ -953,7 +967,7 @@ header {
 .print-a4-slogan {
     font-size: 1.4rem;
     font-weight: 800;
-    color: #f97316;
+    color: var(--primary);
     -webkit-text-stroke: 0.5px #1c1917;
     text-align: center;
     margin: 0 auto;
@@ -968,7 +982,7 @@ header {
     width: 10mm;
     height: 10mm;
     border-radius: 50%;
-    background: #f97316;
+    background: var(--primary);
     color: #fff;
     font-weight: 700;
     font-size: 1.1rem;
@@ -1040,7 +1054,7 @@ header {
 .print-card-left h3 {
     font-size: 1.3rem;
     font-weight: 800;
-    color: #f97316;
+    color: var(--primary);
     margin: 0 0 1mm;
     letter-spacing: -0.02em;
     line-height: 1;
@@ -1062,7 +1076,7 @@ header {
 }
 
 .print-card-steps strong {
-    color: #f97316;
+    color: var(--primary);
 }
 
 .print-card-right {

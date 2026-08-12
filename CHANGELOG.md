@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.25 (2026-08-12)
+
+### Changed
+- **Couleur par défaut = vert** — la teinte d'accent par défaut (icônes, barre de statut/notifications via `theme_color`, boutons, bulles, bannière de mise à jour) passe au vert forêt `#10b981` (3e thème). L'orange `#f97316` devient un **thème optionnel** dédié « Orange » dans le sélecteur.
+- **Impression** — les exemples d'impression (A4, carte, 58mm) suivent désormais la teinte active du thème (`accent` / `var(--primary)`).
+- **Manifest** — `theme_color` passé en `#10b981` (barre de navigateur/notif).
+- **Icônes** — SVG + PNG (192/512) régénérés en vert.
+- **Presentation** — palette par défaut vert forêt.
+- **Version** : `0.0.25`
+
 ## 0.0.24 (2026-08-12)
 
 ### Added

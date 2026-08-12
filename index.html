@@ -72,7 +72,7 @@
         </div>
         <a class="landing-stats-link" href="stats.html" data-i18n="landing.stats">Stats des rooms</a>
         <a class="landing-about-link" href="presentation.html" data-i18n="landing.about">En savoir plus sur TeamCel</a>
-        <small class="landing-version">v0.0.24</small>
+        <small class="landing-version">v0.0.25</small>
     </div>
 
     <!-- CHAT SCREEN -->
@@ -223,9 +223,9 @@
 
         /* ===== THEMES ===== */
         var THEMES = [
-            { id: '', label: 'Classique', color: '#f97316' },
+            { id: '', label: 'Classique', color: '#10b981' },
+            { id: 'orange', label: 'Orange', color: '#f97316' },
             { id: 'ocean', label: 'Océan', color: '#0ea5e9' },
-            { id: 'forest', label: 'Forêt', color: '#10b981' },
             { id: 'lavender', label: 'Lavande', color: '#8b5cf6' },
             { id: 'coral', label: 'Corail', color: '#f43f5e' },
             { id: 'night', label: 'Nuit', color: '#fb923c' }
@@ -633,20 +633,21 @@
             var qrSrc = cachedPrintDataUrl || '';
             var title = 'TeamCel';
             var subtitle = I18N.t('print.subtitle');
+            var accent = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#10b981';
 
             var html = '<html><head><title>' + title + '</title>' +
                 '<meta name="viewport" content="width=device-width, initial-scale=1">' +
                 '<style>body{font-family:-apple-system,Segoe UI,system-ui,sans-serif;margin:0;padding:20px;color:#1c1917;text-align:center}hr{border:none;border-top:1px dashed #d6d3d1;margin:12px 0}</style></head><body>';
 
             if (type === 'a4') {
-                html += '<div style="background:#f97316;padding:40px 50px 30px;text-align:center">' +
+                html += '<div style="background:'+accent+';padding:40px 50px 30px;text-align:center">' +
                     '<h1 style="font-size:42px;font-weight:800;color:#fff;margin:0">'+title+'</h1>' +
                     '<p style="font-size:16px;color:rgba(255,255,255,0.85);margin:0">'+subtitle+'</p></div>' +
                     '<div style="padding:30px 60px;text-align:center">' +
                     '<div style="font-size:34px;font-weight:900;color:#1c1917;word-break:break-word;margin-bottom:24px">'+currentRoom+'</div>' +
                     '<img src="'+qrSrc+'" style="border:2px solid #e7e5e4;border-radius:8px;padding:10px;background:#fff" width="220"><br>' +
                     '<div style="font-family:monospace;font-size:12px;background:#f5f5f4;padding:8px 16px;border-radius:4px;margin:16px auto;display:inline-block;word-break:break-all;color:#78716c">'+url+'</div>' +
-                    '<div style="font-size:20px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;margin-top:20px">'+I18N.t('print.slogan')+'</div>' +
+                    '<div style="font-size:20px;font-weight:800;color:'+accent+';-webkit-text-stroke:0.5px #1c1917;margin-top:20px">'+I18N.t('print.slogan')+'</div>' +
                     '</div>' +
                     '<div style="border-top:1px solid #e7e5e4;padding:14px 50px;font-size:10px;color:#a8a29e">teamcel.app &mdash; '+I18N.t('print.subtitle')+'</div>';
 
@@ -657,7 +658,7 @@
                     '.grid{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(8,1fr);height:100vh;width:100%}' +
                     '.card{box-sizing:border-box;border:1px solid #e7e5e4;display:flex;align-items:stretch;text-align:left;padding:12px;overflow:hidden}' +
                     '.card-info{flex:1;min-width:0;display:flex;flex-direction:column;padding-right:10px}' +
-                    '.card-brand{font-size:14px;font-weight:800;color:#f97316;white-space:nowrap}' +
+                    '.card-brand{font-size:14px;font-weight:800;color:'+accent+';white-space:nowrap}' +
                     '.card-brand span{color:#1c1917}' +
                     '.card-room{flex:1;display:flex;align-items:center;font-size:26px;font-weight:900;color:#1c1917;line-height:1;word-break:break-word;margin:6px 0}' +
                     '.card-url{font-family:monospace;font-size:6px;color:#78716c;word-break:break-all;line-height:1.1}' +
@@ -686,7 +687,7 @@
                     '<img src="'+qrSrc+'" width="140"><br>' +
                     '<div style="font-size:8px;word-break:break-all;color:#78716c;margin:10px 0">'+url+'</div>' +
                     '<hr>' +
-                    '<div style="font-size:9px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;text-align:center;margin:8px 0">'+I18N.t('print.slogan')+'</div>' +
+                    '<div style="font-size:9px;font-weight:800;color:'+accent+';-webkit-text-stroke:0.5px #1c1917;text-align:center;margin:8px 0">'+I18N.t('print.slogan')+'</div>' +
                     '<p style="font-size:7px;color:#a8a29e">teamcel.app</p></div>';
             }
 
