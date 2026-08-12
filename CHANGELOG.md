@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.22 (2026-08-12)
+
+### Fix
+- **PWA installable** — l'enregistrement du service worker ne dépend plus de la librairie `register-service-worker` (CDN `esm.sh`) : retour à un `navigator.serviceWorker.register('sw.js')` direct dans le module. La bannière « Nouvelle version disponible » est conservée (détection `updatefound` + état `installed` + page déjà contrôlée). Suppression de l'entrée importmap inutilisée.
+
+### Changed
+- **Version** : `0.0.22`
+
 ## 0.0.21 (2026-08-12)
 
 ### Changed

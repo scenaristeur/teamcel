@@ -35,8 +35,7 @@
     <script type="importmap">
     {
     "imports": {
-        "qrcode": "https://esm.sh/qrcode@1.5.4",
-        "register-service-worker": "https://esm.sh/register-service-worker"
+        "qrcode": "https://esm.sh/qrcode@1.5.4"
     }
     }
     </script>
@@ -72,7 +71,7 @@
         </div>
         <a class="landing-stats-link" href="stats.html" data-i18n="landing.stats">Stats des rooms</a>
         <a class="landing-about-link" href="presentation.html" data-i18n="landing.about">En savoir plus sur TeamCel</a>
-        <small class="landing-version">v0.0.21</small>
+        <small class="landing-version">v0.0.22</small>
     </div>
 
     <!-- CHAT SCREEN -->
@@ -82,7 +81,6 @@
             <div class="header-right">
                 <div class="room-badge" id="roomBadge">...</div>
                 <a class="stats-link" id="statsLink" href="stats.html" title="Stats des rooms">#</a>
-                <button class="lang-toggle" data-i18n-toggle data-i18n="switchLang">English</button>
                 <span class="conn-dot" id="connDot" title="Connexion…"></span>
                 <button class="theme-btn" id="themeBtn" title="Changer de thème" data-i18n-title="chat.themeTitle">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -208,7 +206,6 @@
 
     <script type="module">
         import QRCode from 'qrcode';
-        import { register as registerServiceWorker } from 'register-service-worker';
 
         const urlParams = new URLSearchParams(window.location.search);
         const roomFromUrl = urlParams.get('room');
@@ -738,32 +735,37 @@
             onKeyboardResize();
         }
 
-        // PWA update banner — same behaviour as the reference brain project
+        // Service worker registration + "new version" update banner.
+        // Registered directly (no CDN dependency) so the PWA stays installable.
         if ('serviceWorker' in navigator) {
-            var refreshing = false;
+            var needsReload = false;
             var hadController = !!navigator.serviceWorker.controller;
             navigator.serviceWorker.addEventListener('controllerchange', function() {
                 if (!hadController) { hadController = true; return; }
-                if (refreshing) return;
-                refreshing = true;
-                window.location.reload();
+                if (needsReload) { needsReload = false; window.location.reload(); }
             });
 
-            registerServiceWorker('sw.js', {
-                registered: function(reg) {
-                    document.getElementById('updateReloadBtn').addEventListener('click', function() {
-                        if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-                        else window.location.reload();
+            navigator.serviceWorker.register('sw.js').then(function(reg) {
+                document.getElementById('updateReloadBtn').addEventListener('click', function() {
+                    if (reg.waiting) {
+                        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        needsReload = true;
+                    } else {
+                        window.location.reload();
+                    }
+                });
+
+                reg.addEventListener('updatefound', function() {
+                    var newWorker = reg.installing;
+                    if (!newWorker) return;
+                    newWorker.addEventListener('statechange', function() {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            document.getElementById('updateBanner').classList.add('visible');
+                        }
                     });
-                },
-                updated: function() {
-                    document.getElementById('updateBanner').classList.add('visible');
-                    console.log("New content is available; please refresh.");
-                    alert("This app has been updated, please close the app & re-open");
-                },
-                error: function(err) {
-                    console.error('[SW] registration error:', err);
-                }
+                });
+            }).catch(function(err) {
+                console.error('[SW] registration error:', err);
             });
         }
 
