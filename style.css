@@ -427,6 +427,13 @@ header {
     transform: scale(0.95);
 }
 
+.install-cta span {
+    margin-left: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.header-right .install-cta,
 .landing-lang .install-cta {
     width: auto;
     height: auto;
@@ -437,6 +444,7 @@ header {
     background: var(--primary);
     color: #fff;
     border: none;
+    gap: 2px;
 }
 
 .conn-dot {
