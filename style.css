@@ -408,6 +408,37 @@ header {
     transform: scale(0.95);
 }
 
+.install-cta {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.install-cta:active {
+    transform: scale(0.95);
+}
+
+.landing-lang .install-cta {
+    width: auto;
+    height: auto;
+    border-radius: 99px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+}
+
 .conn-dot {
     width: 8px;
     height: 8px;

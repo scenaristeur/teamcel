@@ -67,11 +67,12 @@
             <div class="theme-picker" id="landingThemePicker"></div>
         </div>
         <div class="landing-lang">
+            <button class="install-cta" style="display:none;" data-i18n="install">Installer</button>
             <button class="lang-toggle" data-i18n-toggle data-i18n="switchLang">English</button>
         </div>
         <a class="landing-stats-link" href="stats.html" data-i18n="landing.stats">Stats des rooms</a>
         <a class="landing-about-link" href="presentation.html" data-i18n="landing.about">En savoir plus sur TeamCel</a>
-        <small class="landing-version">v0.0.23</small>
+        <small class="landing-version">v0.0.24</small>
     </div>
 
     <!-- CHAT SCREEN -->
@@ -98,6 +99,13 @@
                         <rect x="3" y="14" width="7" height="7" rx="1"/>
                         <rect x="14" y="14" width="3" height="3"/>
                         <rect x="18" y="18" width="3" height="3"/>
+                    </svg>
+                </button>
+                <button class="install-cta" style="display:none;" title="Installer TeamCel">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3v10"/>
+                        <path d="m7 9 5 5 5-5"/>
+                        <path d="M4 17v3c0 .6.4 1 1 1h14c.6 0 1-.4 1-1v-3"/>
                     </svg>
                 </button>
             </div>
@@ -746,6 +754,36 @@
          In a dedicated plain script so the PWA stays installable even if the
          main module (which depends on the qrcode CDN) fails to load. -->
     <script>
+        // PWA install: show an "Install" button when Chrome deems the app
+        // installable (beforeinstallprompt), then trigger the native prompt.
+        var deferredInstall = null;
+        function refreshInstallBtn() {
+            var show = !!deferredInstall;
+            var btns = document.querySelectorAll('.install-cta');
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].style.display = show ? '' : 'none';
+            }
+        }
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredInstall = e;
+            refreshInstallBtn();
+        });
+        window.addEventListener('appinstalled', function() {
+            deferredInstall = null;
+            refreshInstallBtn();
+        });
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.install-cta')) {
+                if (deferredInstall) {
+                    deferredInstall.prompt();
+                    deferredInstall.userChoice.finally(function() { deferredInstall = null; });
+                } else {
+                    window.alert('Already installed or not eligible.');
+                }
+            }
+        });
+
         if ('serviceWorker' in navigator) {
             var swNeedsReload = false;
             var swHadController = !!navigator.serviceWorker.controller;

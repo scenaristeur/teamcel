@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.24 (2026-08-12)
+
+### Added
+- **Installation PWA proposée** — capture de l'événement `beforeinstallprompt` : quand Chrome juge l'app installable, un bouton « Installer » apparaît (dans le header du chat et sur la landing) et déclenche la boîte de dialogue native `prompt()`. Masqué automatiquement après installation (`appinstalled`).
+
+### Changed
+- **Version** : `0.0.24`
+
 ## 0.0.23 (2026-08-12)
 
 ### Fix

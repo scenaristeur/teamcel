@@ -19,6 +19,7 @@ var I18N = (function() {
         'landing.stats': { fr: 'Stats des rooms', en: 'Rooms stats' },
         'landing.about': { fr: 'En savoir plus sur TeamCel', en: 'More about TeamCel' },
         'switchLang': { fr: 'English', en: 'Français' },
+        'install': { fr: 'Installer', en: 'Install' },
 
         // ===== Chat =====
         'chat.flairLabel': { fr: 'ton vibe :', en: 'your vibe:' },
