@@ -345,6 +345,7 @@
             document.getElementById('statsLink').href = 'stats.html?room=' + encodeURIComponent(roomId);
             sessionStorage.setItem('teamcel-room', roomId);
             localStorage.setItem('teamcel-last-room', roomId);
+            saveRecentRoom(roomId);
 
             badge.addEventListener('blur', function() {
                 finishRename(roomId);
@@ -717,10 +718,15 @@
             var chatHeader = document.querySelector('header');
             var chatFlair = document.querySelector('.flair-bar');
             var flairInputEl = document.getElementById('flairInput');
+            var badgeEl = document.getElementById('roomBadge');
             var onKeyboardResize = function() {
                 var kbOpen = window.visualViewport.height < kbThreshold;
                 var flairFocused = document.activeElement === flairInputEl;
-                if (chatHeader) chatHeader.style.display = (kbOpen && !flairFocused) ? 'none' : '';
+                var badgeFocused = document.activeElement === badgeEl;
+                // Keep the element being edited visible, otherwise the focus is
+                // lost and the keyboard closes immediately.
+                var editing = flairFocused || badgeFocused;
+                if (chatHeader) chatHeader.style.display = (kbOpen && !editing) ? 'none' : '';
                 if (chatFlair) chatFlair.style.display = (kbOpen && !flairFocused) ? 'none' : '';
                 var msgs = document.getElementById('messages');
                 if (!msgs) return;
