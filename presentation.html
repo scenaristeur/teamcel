@@ -273,6 +273,18 @@
 
         .demo-input button:active { transform: scale(0.98); }
 
+        @media (max-width: 400px) {
+            .demo-input {
+                flex-wrap: wrap;
+            }
+            .demo-input input {
+                flex: 1 1 100%;
+            }
+            .demo-input button {
+                width: 100%;
+            }
+        }
+
         /* ===== PATREON ===== */
         .patreon-box {
             background: #fff;
@@ -371,7 +383,7 @@
 
     <!-- FOR BAR OWNERS -->
     <section>
-        <h2>Pour les <span>bars</span></h2>
+        <h2>Pour les bars, les parcs, les files d'attente de concert</h2>
         <div class="benefits">
             <div class="benefit">
                 <h3><span>+</span> De lien social</h3>
@@ -436,7 +448,7 @@
 
     <!-- PATREON -->
     <section>
-        <h2>Soutenir le <span>projet</span></h2>
+        <h2>Soutenir <span>TeamCel</span></h2>
         <div class="patreon-box">
             <h3>TeamCel a besoin de toi</h3>
             <p>
@@ -444,7 +456,7 @@
                 Si tu utilises TeamCel dans ton bar et que tu veux soutenir le projet, un petit coup de main est le bienvenu.
             </p>
             <a class="patreon-btn" href="https://patreon.com/TeamCelApp" target="_blank" rel="noopener">
-                Devenir patron →</a>
+                Nous soutenir →</a>
         </div>
     </section>
 
