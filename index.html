@@ -49,7 +49,7 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> <small>0.0.18</small></div>
+        <div class="landing-brand">Team<span>Cel</span> - <small>0.0.18</small></div>
         <div class="landing-tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
@@ -724,6 +724,8 @@
                 },
                 updated: function() {
                     document.getElementById('updateBanner').classList.add('visible');
+                    console.log("New content is available; please refresh.");
+                    alert("This app has been updated, please close the app & re-open");
                 },
                 error: function(err) {
                     console.error('[SW] registration error:', err);
