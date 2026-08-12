@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="TeamCel">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="icon-192.svg">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gun/lib/yson.js"></script>
     <script>
@@ -71,7 +71,7 @@
         </div>
         <a class="landing-stats-link" href="stats.html" data-i18n="landing.stats">Stats des rooms</a>
         <a class="landing-about-link" href="presentation.html" data-i18n="landing.about">En savoir plus sur TeamCel</a>
-        <small class="landing-version">v0.0.22</small>
+        <small class="landing-version">v0.0.23</small>
     </div>
 
     <!-- CHAT SCREEN -->
@@ -735,32 +735,45 @@
             onKeyboardResize();
         }
 
-        // Service worker registration + "new version" update banner.
-        // Registered directly (no CDN dependency) so the PWA stays installable.
+    </script>
+
+    <div class="update-banner" id="updateBanner">
+        <span class="update-banner-text" data-i18n="update.text">Nouvelle version disponible</span>
+        <button class="update-banner-btn" id="updateReloadBtn" data-i18n="update.reload">Recharger</button>
+    </div>
+
+    <!-- Service worker registration + "new version" update banner.
+         In a dedicated plain script so the PWA stays installable even if the
+         main module (which depends on the qrcode CDN) fails to load. -->
+    <script>
         if ('serviceWorker' in navigator) {
-            var needsReload = false;
-            var hadController = !!navigator.serviceWorker.controller;
+            var swNeedsReload = false;
+            var swHadController = !!navigator.serviceWorker.controller;
             navigator.serviceWorker.addEventListener('controllerchange', function() {
-                if (!hadController) { hadController = true; return; }
-                if (needsReload) { needsReload = false; window.location.reload(); }
+                if (!swHadController) { swHadController = true; return; }
+                if (swNeedsReload) { swNeedsReload = false; window.location.reload(); }
             });
 
             navigator.serviceWorker.register('sw.js').then(function(reg) {
-                document.getElementById('updateReloadBtn').addEventListener('click', function() {
-                    if (reg.waiting) {
-                        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-                        needsReload = true;
-                    } else {
-                        window.location.reload();
-                    }
-                });
+                var reloadBtn = document.getElementById('updateReloadBtn');
+                if (reloadBtn) {
+                    reloadBtn.addEventListener('click', function() {
+                        if (reg.waiting) {
+                            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                            swNeedsReload = true;
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                }
 
                 reg.addEventListener('updatefound', function() {
                     var newWorker = reg.installing;
                     if (!newWorker) return;
                     newWorker.addEventListener('statechange', function() {
                         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            document.getElementById('updateBanner').classList.add('visible');
+                            var banner = document.getElementById('updateBanner');
+                            if (banner) banner.classList.add('visible');
                         }
                     });
                 });
@@ -768,13 +781,7 @@
                 console.error('[SW] registration error:', err);
             });
         }
-
     </script>
-
-    <div class="update-banner" id="updateBanner">
-        <span class="update-banner-text" data-i18n="update.text">Nouvelle version disponible</span>
-        <button class="update-banner-btn" id="updateReloadBtn" data-i18n="update.reload">Recharger</button>
-    </div>
 
 </body>
 

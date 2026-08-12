@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.23 (2026-08-12)
+
+### Fix
+- **PWA installable (suite)** — l'enregistrement du service worker sort du gros module (qui dépend du CDN `qrcode`) vers un script autonome à la fin du `<body>` : la PWA reste installable même si le module se charge mal. Le manifest référence désormais de **vraies icônes PNG** (192/512 + maskable) générées depuis le SVG, plus fiables pour l'installabilité Chrome ; `apple-touch-icon` en PNG. La bannière « Nouvelle version disponible » est conservée.
+
+### Changed
+- **sw.js** — icônes PNG au pré-cache ; `CACHE_NAME` passé en `teamcel-v9`.
+- **Version** : `0.0.23`
+
 ## 0.0.22 (2026-08-12)
 
 ### Fix

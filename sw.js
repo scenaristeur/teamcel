@@ -1,4 +1,4 @@
-var CACHE_NAME = 'teamcel-v8';
+var CACHE_NAME = 'teamcel-v9';
 var urlsToCache = [
     './index.html',
     './main.js',
@@ -8,8 +8,8 @@ var urlsToCache = [
     './stats.html',
     './presentation.html',
     './manifest.json',
-    './icon-192.svg',
-    './icon-512.svg'
+    './icon-192.png',
+    './icon-512.png'
 ];
 
 self.addEventListener('install', function(event) {
