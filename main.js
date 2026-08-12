@@ -33,10 +33,31 @@ var chattable = {
         'Chanteur', 'Danseur', 'Raclette', 'Fondue', 'Croissant', 'Baguette',
         'Crepe', 'Gauffre', 'Mousse', 'Sorbet', 'Nougat', 'Caramel', 'Menthe'
     ],
+    _adjectivesEn: [
+        'Rabbit', 'Bear', 'Fox', 'Cat', 'Owl', 'Dolphin', 'Tiger', 'Eagle',
+        'Wolf', 'Panda', 'Koala', 'Penguin', 'Cheetah', 'Owl', 'Whale',
+        'Octopus', 'Zebra', 'Kangaroo', 'Otter', 'Ferret', 'Monkey', 'Peacock',
+        'Dragonfly', 'Butterfly', 'Stork', 'Flamingo', 'Turtle', 'Salamander',
+        'Alpaca', 'Llama', 'Vulture', 'Boar', 'Beaver', 'Finch', 'Hawk',
+        'Sardine', 'Tuna', 'Bass', 'Perch', 'Pike', 'Carp', 'Trout',
+        'Sole', 'Ray', 'Eel', 'Cod', 'Mackerel', 'Anchovy', 'Herring'
+    ],
+    _nounsEn: [
+        'Lucky', 'Sly', 'Crazy', 'Wise', 'Swift', 'Strong', 'Small', 'Big',
+        'Fast', 'Slow', 'Brave', 'Kind', 'Mystic', 'Shiny', 'Sunny',
+        'Polar', 'Cosmic', 'Lunar', 'Stellar', 'Celestial', 'Terrestrial',
+        'Wild', 'Stormy', 'Calm', 'Quiet', 'Curious', 'Playful',
+        'Dreamy', 'Wandering', 'Nomad', 'Pilot', 'Artist', 'Poet', 'Funny',
+        'Singer', 'Dancer', 'Cheese', 'Fondue', 'Croissant', 'Baguette',
+        'Crepe', 'Waffle', 'Mousse', 'Sorbet', 'Nougat', 'Caramel', 'Mint'
+    ],
 
     _generatePseudo() {
-        const adj = this._adjectives[Math.floor(Math.random() * this._adjectives.length)];
-        const noun = this._nouns[Math.floor(Math.random() * this._nouns.length)];
+        var en = window.I18N && typeof window.I18N.getLang === 'function' && !I18N.isFr();
+        var adjList = en ? this._adjectivesEn : this._adjectives;
+        var nounList = en ? this._nounsEn : this._nouns;
+        const adj = adjList[Math.floor(Math.random() * adjList.length)];
+        const noun = nounList[Math.floor(Math.random() * nounList.length)];
         return adj + noun;
     },
 

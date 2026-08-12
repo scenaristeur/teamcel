@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeamCel — Chat anonyme pour les bars</title>
+    <title data-i18n="presentation.title">TeamCel — Chat anonyme pour les bars</title>
     <link rel="icon" href="icon-192.svg" type="image/svg+xml">
+    <script src="i18n.js"></script>
     <style>
         :root {
             --primary: #f97316;
@@ -339,43 +340,44 @@
 
 <header>
     <div class="header-brand">Team<span>Cel</span></div>
+    <button class="lang-toggle" data-i18n-toggle data-i18n="switchLang" style="margin-top:0.75rem;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-size:0.72rem;font-weight:700;padding:0.35rem 0.65rem;border-radius:99px;cursor:pointer;">English</button>
 </header>
 
 <main class="container">
 
     <!-- HERO -->
     <section class="hero">
-        <h1>Le chat anonyme <span>pour les bars</span></h1>
-        <p>
+        <h1 data-i18n-html="presentation.heroTitle">Le chat anonyme <span>pour les bars</span></h1>
+        <p data-i18n="presentation.heroText">
             Un QR code sur la porte ou la table. Tes clients scannent, discutent.
             Sans inscription, sans app, sans modération.
         </p>
-        <a class="hero-cta" href="./">Essayer TeamCel →</a>
+        <a class="hero-cta" href="./" data-i18n="presentation.heroCta">Essayer TeamCel →</a>
     </section>
 
     <!-- HOW IT WORKS -->
     <section>
-        <h2>Comment ça <span>marche</span></h2>
+        <h2 data-i18n-html="presentation.howTitle">Comment ça <span>marche</span></h2>
         <div class="steps">
             <div class="step">
                 <div class="step-num">1</div>
                 <div class="step-content">
-                    <h3>Imprime le QR code</h3>
-                    <p>Génère un QR code pour ta room et imprime-le en A4, carte de visite ou ticket 58mm.</p>
+                    <h3 data-i18n="presentation.step1Title">Imprime le QR code</h3>
+                    <p data-i18n="presentation.step1Text">Génère un QR code pour ta room et imprime-le en A4, carte de visite ou ticket 58mm.</p>
                 </div>
             </div>
             <div class="step">
                 <div class="step-num">2</div>
                 <div class="step-content">
-                    <h3>Colle-le à l'entrée</h3>
-                    <p>Les clients scannent avec leur téléphone. Pas de téléchargement, pas de compte.</p>
+                    <h3 data-i18n="presentation.step2Title">Colle-le à l'entrée</h3>
+                    <p data-i18n="presentation.step2Text">Les clients scannent avec leur téléphone. Pas de téléchargement, pas de compte.</p>
                 </div>
             </div>
             <div class="step">
                 <div class="step-num">3</div>
                 <div class="step-content">
-                    <h3>Ils discutent</h3>
-                    <p>Un pseudo leur est attribué. Ils peuvent échanger sans donner leur nom ni leur numéro.</p>
+                    <h3 data-i18n="presentation.step3Title">Ils discutent</h3>
+                    <p data-i18n="presentation.step3Text">Un pseudo leur est attribué. Ils peuvent échanger sans donner leur nom ni leur numéro.</p>
                 </div>
             </div>
         </div>
@@ -383,45 +385,45 @@
 
     <!-- FOR BAR OWNERS -->
     <section>
-        <h2>Pour les bars, les parcs, les files d'attente de concert</h2>
+        <h2 data-i18n="presentation.barsTitle">Pour les bars, les parcs, les files d'attente de concert</h2>
         <div class="benefits">
             <div class="benefit">
-                <h3><span>+</span> De lien social</h3>
-                <p>Les clients timides osent parler. Ça crée de l'ambiance et ça les fait revenir.</p>
+                <h3 data-i18n-html="presentation.benefit1Title"><span>+</span> De lien social</h3>
+                <p data-i18n="presentation.benefit1Text">Les clients timides osent parler. Ça crée de l'ambiance et ça les fait revenir.</p>
             </div>
             <div class="benefit">
-                <h3><span>⚡</span> Instantané, zéro installation</h3>
-                <p>Pas d'app store, pas de compte. Un scan et c'est parti. Ça marche sur tous les téléphones.</p>
+                <h3 data-i18n-html="presentation.benefit2Title"><span>⚡</span> Instantané, zéro installation</h3>
+                <p data-i18n="presentation.benefit2Text">Pas d'app store, pas de compte. Un scan et c'est parti. Ça marche sur tous les téléphones.</p>
             </div>
             <div class="benefit">
-                <h3><span>🖨️</span> QR code prêt à imprimer</h3>
-                <p>3 formats : A4 (porte), cartes de visite (comptoir), 58mm (caisse). Impression directe depuis l'app.</p>
+                <h3 data-i18n-html="presentation.benefit3Title"><span>🖨️</span> QR code prêt à imprimer</h3>
+                <p data-i18n="presentation.benefit3Text">3 formats : A4 (porte), cartes de visite (comptoir), 58mm (caisse). Impression directe depuis l'app.</p>
             </div>
             <div class="benefit">
-                <h3><span>🔒</span> Anonyme et bienveillant</h3>
-                <p>Pas de modération nécessaire. Les messages disparaissent au bout d'une heure. Parfait pour un public décontracté.</p>
+                <h3 data-i18n-html="presentation.benefit4Title"><span>🔒</span> Anonyme et bienveillant</h3>
+                <p data-i18n="presentation.benefit4Text">Pas de modération nécessaire. Les messages disparaissent au bout d'une heure. Parfait pour un public décontracté.</p>
             </div>
         </div>
     </section>
 
     <!-- PRINT FORMATS -->
     <section>
-        <h2>Formats <span>d'impression</span></h2>
+        <h2 data-i18n-html="presentation.formatsTitle">Formats <span>d'impression</span></h2>
         <div class="formats">
             <div class="format">
                 <div class="format-icon">📄</div>
                 <h4>A4</h4>
-                <p>Pour la porte d'entrée</p>
+                <p data-i18n="presentation.formatA4">Pour la porte d'entrée</p>
             </div>
             <div class="format">
                 <div class="format-icon">🪪</div>
                 <h4>Carte</h4>
-                <p>8 par page, pour le comptoir</p>
+                <p data-i18n="presentation.formatCard">8 par page, pour le comptoir</p>
             </div>
             <div class="format">
                 <div class="format-icon">🧾</div>
                 <h4>58mm</h4>
-                <p>Pour imprimante thermique</p>
+                <p data-i18n="presentation.formatMini">Pour imprimante thermique</p>
             </div>
         </div>
     </section>
@@ -429,33 +431,33 @@
     <!-- TAGLINE BAR -->
     <section>
         <div class="tagline-bar">
-            <h3>TeamCel, c'est gratuit</h3>
-            <p>Pas de frais cachés. Pas de pub. Juste un outil pour mieux rencontrer les gens autour d'un verre.</p>
+            <h3 data-i18n="presentation.tagTitle">TeamCel, c'est gratuit</h3>
+            <p data-i18n="presentation.tagText">Pas de frais cachés. Pas de pub. Juste un outil pour mieux rencontrer les gens autour d'un verre.</p>
         </div>
     </section>
 
     <!-- TRY DEMO -->
     <section>
-        <h2>Essaie <span>maintenant</span></h2>
+        <h2 data-i18n-html="presentation.tryTitle">Essaie <span>maintenant</span></h2>
         <div class="demo-box">
-            <p>Crée ta room et obtiens le QR code à imprimer en quelques secondes.</p>
+            <p data-i18n="presentation.tryText">Crée ta room et obtiens le QR code à imprimer en quelques secondes.</p>
             <div class="demo-input">
-                <input type="text" id="demoRoomInput" placeholder="Nom de la room..." autocomplete="off">
-                <button id="demoGoBtn">C'est parti</button>
+                <input type="text" id="demoRoomInput" placeholder="Nom de la room..." autocomplete="off" data-i18n-ph="presentation.demoPlaceholder">
+                <button id="demoGoBtn" data-i18n="presentation.demoGo">C'est parti</button>
             </div>
         </div>
     </section>
 
     <!-- PATREON -->
     <section>
-        <h2>Soutenir <span>TeamCel</span></h2>
+        <h2 data-i18n-html="presentation.supportTitle">Soutenir <span>TeamCel</span></h2>
         <div class="patreon-box">
-            <h3>TeamCel a besoin de toi</h3>
-            <p>
+            <h3 data-i18n="presentation.supportBoxTitle">TeamCel a besoin de toi</h3>
+            <p data-i18n="presentation.supportText">
                 Le relay GunDB tourne sur un serveur, le domaine et le tunnel Cloudflare ont un coût.
                 Si tu utilises TeamCel dans ton bar et que tu veux soutenir le projet, un petit coup de main est le bienvenu.
             </p>
-            <a class="patreon-btn" href="https://patreon.com/TeamCelApp" target="_blank" rel="noopener">
+            <a class="patreon-btn" href="https://patreon.com/TeamCelApp" target="_blank" rel="noopener" data-i18n="presentation.supportBtn">
                 Nous soutenir →</a>
         </div>
     </section>
@@ -464,11 +466,11 @@
 
 <footer class="container">
     <p>
-        <a href="./">Room de démo</a> ·
+        <a href="./" data-i18n="presentation.demoRoomLink">Room de démo</a> ·
         <a href="stats.html">Stats</a> ·
         <a href="https://github.com/scenaristeur/teamcel" target="_blank" rel="noopener">GitHub</a>
     </p>
-    <p style="margin-top:0.5rem;font-size:0.7rem;">TeamCel — anonyme, gratuit, ouvert</p>
+    <p style="margin-top:0.5rem;font-size:0.7rem;" data-i18n="presentation.footerTag">TeamCel — anonyme, gratuit, ouvert</p>
 </footer>
 
 <script>

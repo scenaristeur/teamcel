@@ -41,6 +41,7 @@
     }
     </script>
     <link rel="stylesheet" href="style.css">
+    <script src="i18n.js"></script>
     <script src="peers.js"></script>
     <script src="main.js"></script>
 </head>
@@ -49,25 +50,29 @@
 
     <!-- LANDING SCREEN -->
     <div class="landing" id="landingScreen">
-        <div class="landing-brand">Team<span>Cel</span> - <small>0.0.18</small></div>
-        <div class="landing-tagline">
+        <div class="landing-brand">Team<span>Cel</span></div>
+        <div class="landing-tagline" data-i18n-html="landing.tagline">
             Chat anonyme pour les timides.<br>
             Entre dans une room, discute, rencontre.
         </div>
         <div class="landing-form">
-            <input type="text" id="roomNameInput" placeholder="Nom de la room..." autocomplete="off">
-            <button id="goBtn">Entrer</button>
+            <input type="text" id="roomNameInput" placeholder="Nom de la room..." autocomplete="off" data-i18n-ph="landing.roomPlaceholder">
+            <button id="goBtn" data-i18n="landing.go">Entrer</button>
         </div>
         <div class="recent-rooms" id="recentRooms" style="display:none;">
-            <div class="recent-rooms-title">Mes dernières rooms</div>
+            <div class="recent-rooms-title" data-i18n="landing.recentTitle">Mes dernières rooms</div>
             <div class="recent-rooms-list" id="recentRoomsList"></div>
         </div>
         <div class="landing-theme">
-            <div class="landing-theme-label">Thème</div>
+            <div class="landing-theme-label" data-i18n="landing.theme">Thème</div>
             <div class="theme-picker" id="landingThemePicker"></div>
         </div>
-        <a class="landing-stats-link" href="stats.html">Stats des rooms</a>
-        <a class="landing-about-link" href="presentation.html">En savoir plus sur TeamCel</a>
+        <div class="landing-lang">
+            <button class="lang-toggle" data-i18n-toggle data-i18n="switchLang">English</button>
+        </div>
+        <a class="landing-stats-link" href="stats.html" data-i18n="landing.stats">Stats des rooms</a>
+        <a class="landing-about-link" href="presentation.html" data-i18n="landing.about">En savoir plus sur TeamCel</a>
+        <small class="landing-version">v0.0.20</small>
     </div>
 
     <!-- CHAT SCREEN -->
@@ -77,8 +82,9 @@
             <div class="header-right">
                 <div class="room-badge" id="roomBadge">...</div>
                 <a class="stats-link" id="statsLink" href="stats.html" title="Stats des rooms">#</a>
+                <button class="lang-toggle" data-i18n-toggle data-i18n="switchLang">English</button>
                 <span class="conn-dot" id="connDot" title="Connexion…"></span>
-                <button class="theme-btn" id="themeBtn" title="Changer de thème">
+                <button class="theme-btn" id="themeBtn" title="Changer de thème" data-i18n-title="chat.themeTitle">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
                         <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
@@ -87,7 +93,7 @@
                         <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
                     </svg>
                 </button>
-                <button class="share-btn" id="shareBtn" title="Partager">
+                <button class="share-btn" id="shareBtn" title="Partager" data-i18n-title="chat.shareTitle">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="7" height="7" rx="1"/>
                         <rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -100,63 +106,63 @@
         </header>
 
         <div class="flair-bar" id="flairBar" style="display:none;">
-            <label>ton vibe :</label>
-            <input type="text" id="flairInput" placeholder="timide, biere, sociable, guitariste, rebel, poete..." maxlength="30">
+            <label data-i18n="chat.flairLabel">ton vibe :</label>
+            <input type="text" id="flairInput" placeholder="timide, biere, sociable, guitariste, rebel, poete..." maxlength="30" data-i18n-ph="chat.flairPlaceholder">
         </div>
 
         <div id="messages"></div>
 
         <div class="reply-bar" id="replyBar" style="display:none;">
             <span class="reply-bar-label" id="replyLabel"></span>
-            <button class="reply-bar-cancel" id="replyCancel" aria-label="Annuler la réponse">&times;</button>
+            <button class="reply-bar-cancel" id="replyCancel" aria-label="Annuler la réponse" data-i18n-aria="chat.replyCancelAria">&times;</button>
         </div>
         <div class="input-bar">
-            <input type="text" id="msgInput" placeholder="Ecrire un message..." autocomplete="off">
-            <button id="sendBtn" aria-label="Envoyer">&#9654;</button>
+            <input type="text" id="msgInput" placeholder="Ecrire un message..." autocomplete="off" data-i18n-ph="chat.msgPlaceholder">
+            <button id="sendBtn" aria-label="Envoyer" data-i18n-aria="chat.sendAria">&#9654;</button>
         </div>
     </div>
 
     <!-- PSEUDO TOAST -->
     <div class="overlay" id="overlay" style="display:none;"></div>
     <div class="pseudo-toast" id="pseudoToast" style="display:none;">
-        <h2>Tu es</h2>
+        <h2 data-i18n="pseudo.title">Tu es</h2>
         <div class="pseudo-name" id="pseudoDisplay" contenteditable="true" spellcheck="false"></div>
-        <button id="pseudoOk">Entrer dans le chat</button>
+        <button id="pseudoOk" data-i18n="pseudo.enter">Entrer dans le chat</button>
     </div>
 
     <!-- SHARE MODAL -->
     <div class="overlay" id="shareOverlay" style="display:none;"></div>
     <div class="share-modal" id="shareModal" style="display:none;">
-        <button class="share-modal-close" id="closeShare" aria-label="Fermer">
+        <button class="share-modal-close" id="closeShare" aria-label="Fermer" data-i18n-aria="share.closeAria">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
         </button>
-        <h2>Partager cette room</h2>
-        <div class="clipboard-info" id="clipboardInfo" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.6rem;margin-bottom:0.75rem;font-size:0.78rem;color:#166534;text-align:left;">
+        <h2 data-i18n="share.title">Partager cette room</h2>
+        <div class="clipboard-info" id="clipboardInfo" data-i18n-html="share.clipboardInfo" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.6rem;margin-bottom:0.75rem;font-size:0.78rem;color:#166534;text-align:left;">
             L'URL a ete copiee dans le presse-papier. Colle-la avec <b>Ctrl+V</b> dans n'importe quelle appli pour la partager !
         </div>
         <canvas id="qrCanvas"></canvas>
         <div class="share-url" id="shareUrl"></div>
         <div class="share-actions">
-            <button class="btn-native-share" id="nativeShareBtn" style="display:none;">Partager</button>
+            <button class="btn-native-share" id="nativeShareBtn" style="display:none;" data-i18n="share.native">Partager</button>
         </div>
-        <div class="share-section-label">Imprimer</div>
+        <div class="share-section-label" data-i18n="share.sectionPrint">Imprimer</div>
         <div class="share-actions">
-            <button class="btn-print" id="printA4Btn">A4</button>
-            <button class="btn-print" id="printCardBtn">Carte</button>
-            <button class="btn-print" id="printMiniBtn">58mm</button>
+            <button class="btn-print" id="printA4Btn" data-i18n="share.printA4">A4</button>
+            <button class="btn-print" id="printCardBtn" data-i18n="share.printCard">Carte</button>
+            <button class="btn-print" id="printMiniBtn" data-i18n="share.printMini">58mm</button>
         </div>
-        <div class="share-section-label">Commander une impression</div>
+        <div class="share-section-label" data-i18n="share.sectionOrder">Commander une impression</div>
         <div class="share-actions">
-            <a class="btn-order" id="orderMailBtn" href="#">Par mail</a>
+            <a class="btn-order" id="orderMailBtn" href="#" data-i18n="share.orderMail">Par mail</a>
         </div>
     </div>
 
     <!-- THEME DROPDOWN -->
     <div class="theme-dropdown" id="themeDropdown" style="display:none;">
-        <div class="theme-dropdown-title">Changer de thème</div>
+        <div class="theme-dropdown-title" data-i18n="theme.title">Changer de thème</div>
         <div class="theme-picker" id="chatThemePicker"></div>
     </div>
 
@@ -166,7 +172,7 @@
         <div class="print-a4" id="printA4">
             <div class="print-a4-header">
                 <h1>TeamCel</h1>
-                <p>Le chat anonyme</p>
+                <p data-i18n="print.subtitle">Le chat anonyme</p>
             </div>
             <div class="print-a4-body">
                 <div class="print-a4-qr">
@@ -174,12 +180,12 @@
                 </div>
                 <div class="print-a4-url" id="printUrlA4"></div>
                 <div class="print-a4-steps">
-                    <div class="print-a4-slogan">Scan, Discute, Rencontre</div>
+                    <div class="print-a4-slogan" data-i18n="print.slogan">Scan, Discute, Rencontre</div>
                 </div>
             </div>
             <div class="print-a4-footer">
                 <span>teamcel.app</span>
-                <span>Chat anonyme - sans inscription - bienveillant</span>
+                <span data-i18n="print.a4FooterTag">Chat anonyme - sans inscription - bienveillant</span>
             </div>
         </div>
 
@@ -189,12 +195,12 @@
         <!-- MINI 58mm -->
         <div class="print-mini" id="printMini">
             <div class="print-mini-title">TeamCel</div>
-            <div class="print-mini-sub">chat anonyme</div>
+            <div class="print-mini-sub" data-i18n="print.miniFooter">chat anonyme</div>
             <canvas id="printQrMini"></canvas>
             <div class="print-mini-url" id="printUrlMini"></div>
             <hr class="print-mini-divider">
             <div class="print-mini-steps">
-                <div>Scan, Discute, Rencontre</div>
+                <div data-i18n="print.slogan">Scan, Discute, Rencontre</div>
             </div>
             <div class="print-mini-footer">teamcel.app</div>
         </div>
@@ -468,7 +474,7 @@
                 var text = msgEl.dataset.text || '';
                 _replyTo = { id: id, name: name, text: text };
                 var label = document.getElementById('replyLabel');
-                label.textContent = 'Répond à ' + name + ': ' + (text.length > 60 ? text.substring(0, 60) + '…' : text);
+                label.textContent = I18N.t('chat.replyToPrefix') + ' ' + name + ': ' + (text.length > 60 ? text.substring(0, 60) + '…' : text);
                 document.getElementById('replyBar').style.display = 'flex';
                 document.getElementById('msgInput').focus();
             });
@@ -513,16 +519,15 @@
             document.getElementById('shareOverlay').style.display = 'block';
             document.getElementById('shareModal').style.display = 'block';
 
-            var orderBody = 'Bonjour, je souhaiterais connaitre les modalités pour pouvoir faire imprimer les QRCodes Teamcel pour un lieu/événement.\n\n' +
-                'Voici ce qu\'il me faudrait :\n' +
-                '- impressions A4 : ,\n' +
-                '- cartes : ,\n' +
-                '- 58mm : ,\n' +
-                '- autocollants : ,\n' +
-                '- autres (tableau grand format, peinture murale...) : \n\n' +
-                'Room : ' + url;
+            var orderBody = I18N.t('share.orderBodyIntro') + '\n' +
+                I18N.t('share.orderA4') + ' ,\n' +
+                I18N.t('share.orderCard') + ' ,\n' +
+                I18N.t('share.orderMini') + ' ,\n' +
+                I18N.t('share.orderStickers') + ' ,\n' +
+                I18N.t('share.orderOther') + ' \n' +
+                I18N.t('share.orderRoom') + ' ' + url;
             document.getElementById('orderMailBtn').href = 'mailto:scenaristeur@gmail.com?subject=' +
-                encodeURIComponent('Commande d\'impressions pour Teamcel') +
+                encodeURIComponent(I18N.t('share.orderSubject')) +
                 '&body=' + encodeURIComponent(orderBody);
 
             QRCode.toCanvas(document.getElementById('qrCanvas'), url, {
@@ -597,7 +602,7 @@
             var url = getShareUrl(currentRoom);
             var qrSrc = cachedPrintDataUrl || '';
             var title = 'TeamCel';
-            var subtitle = 'Le chat anonyme';
+            var subtitle = I18N.t('print.subtitle');
 
             var html = '<html><head><title>' + title + '</title>' +
                 '<meta name="viewport" content="width=device-width, initial-scale=1">' +
@@ -611,9 +616,9 @@
                     '<div style="font-size:34px;font-weight:900;color:#1c1917;word-break:break-word;margin-bottom:24px">'+currentRoom+'</div>' +
                     '<img src="'+qrSrc+'" style="border:2px solid #e7e5e4;border-radius:8px;padding:10px;background:#fff" width="220"><br>' +
                     '<div style="font-family:monospace;font-size:12px;background:#f5f5f4;padding:8px 16px;border-radius:4px;margin:16px auto;display:inline-block;word-break:break-all;color:#78716c">'+url+'</div>' +
-                    '<div style="font-size:20px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;margin-top:20px">Scan, Discute, Rencontre</div>' +
+                    '<div style="font-size:20px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;margin-top:20px">'+I18N.t('print.slogan')+'</div>' +
                     '</div>' +
-                    '<div style="border-top:1px solid #e7e5e4;padding:14px 50px;font-size:10px;color:#a8a29e">teamcel.app &mdash; Chat anonyme</div>';
+                    '<div style="border-top:1px solid #e7e5e4;padding:14px 50px;font-size:10px;color:#a8a29e">teamcel.app &mdash; '+I18N.t('print.subtitle')+'</div>';
 
             } else if (type === 'card') {
                 html += '<style>' +
@@ -636,7 +641,7 @@
                             '<div class="card-brand">Team<span>Cel</span></div>' +
                             '<div class="card-room">'+currentRoom+'</div>' +
                             '<div class="card-url">'+url+'</div>' +
-                            '<div class="card-steps">Scan, Discute, Rencontre</div>' +
+                            '<div class="card-steps">'+I18N.t('print.slogan')+'</div>' +
                         '</div>' +
                         '<img class="card-qr" src="'+qrSrc+'">' +
                     '</div>';
@@ -651,7 +656,7 @@
                     '<img src="'+qrSrc+'" width="140"><br>' +
                     '<div style="font-size:8px;word-break:break-all;color:#78716c;margin:10px 0">'+url+'</div>' +
                     '<hr>' +
-                    '<div style="font-size:9px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;text-align:center;margin:8px 0">Scan, Discute, Rencontre</div>' +
+                    '<div style="font-size:9px;font-weight:800;color:#f97316;-webkit-text-stroke:0.5px #1c1917;text-align:center;margin:8px 0">'+I18N.t('print.slogan')+'</div>' +
                     '<p style="font-size:7px;color:#a8a29e">teamcel.app</p></div>';
             }
 
@@ -736,8 +741,8 @@
     </script>
 
     <div class="update-banner" id="updateBanner">
-        <span class="update-banner-text">Nouvelle version disponible</span>
-        <button class="update-banner-btn" id="updateReloadBtn">Recharger</button>
+        <span class="update-banner-text" data-i18n="update.text">Nouvelle version disponible</span>
+        <button class="update-banner-btn" id="updateReloadBtn" data-i18n="update.reload">Recharger</button>
     </div>
 
 </body>

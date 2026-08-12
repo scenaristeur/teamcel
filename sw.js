@@ -1,10 +1,12 @@
-var CACHE_NAME = 'teamcel-v6';
+var CACHE_NAME = 'teamcel-v7';
 var urlsToCache = [
     './index.html',
     './main.js',
     './peers.js',
+    './i18n.js',
     './style.css',
     './stats.html',
+    './presentation.html',
     './manifest.json',
     './icon-192.svg',
     './icon-512.svg'

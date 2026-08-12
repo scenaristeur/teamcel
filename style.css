@@ -1207,3 +1207,32 @@ header {
 .update-banner-btn:active {
     opacity: 0.85;
 }
+
+/* ===== LANGUAGE TOGGLE ===== */
+.lang-toggle {
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 99px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.landing-lang {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.landing-version {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-align: center;
+    opacity: 0.8;
+}

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <title>Stats - TeamCel</title>
+    <title data-i18n="stats.pageTitle">Stats - TeamCel</title>
     <script>
         (function() {
             var theme = localStorage.getItem('teamcel-theme');
@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gun/lib/yson.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="i18n.js"></script>
     <script src="peers.js"></script>
     <style>
         .back-link {
@@ -147,22 +148,25 @@
 
 <body>
     <header>
-        <div class="brand">Team<span>Cel</span> <span style="font-size:0.7rem;color:var(--text-dim);font-weight:400;">stats</span></div>
-        <a class="back-link" id="backLink" href=".">&larr; Chat</a>
+        <div class="brand">Team<span>Cel</span> <span style="font-size:0.7rem;color:var(--text-dim);font-weight:400;" data-i18n="stats.badge">stats</span></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+            <a class="back-link" id="backLink" href="." data-i18n="stats.back">&larr; Chat</a>
+            <button class="lang-toggle" data-i18n-toggle data-i18n="switchLang">English</button>
+        </div>
     </header>
 
     <div id="content">
         <div class="stats-header">
-            <h2>Rooms actives</h2>
-            <p id="roomCount">Recherche en cours...</p>
-            <button id="refreshBtn" style="margin-top:0.5rem;padding:0.4rem 0.8rem;font-size:0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);cursor:pointer;">Rafraîchir</button>
+            <h2 data-i18n="stats.activeRooms">Rooms actives</h2>
+            <p id="roomCount" data-i18n="stats.searching">Recherche en cours...</p>
+            <button id="refreshBtn" style="margin-top:0.5rem;padding:0.4rem 0.8rem;font-size:0.8rem;border:1px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text);cursor:pointer;" data-i18n="stats.refresh">Rafraîchir</button>
         </div>
         <div id="roomList"></div>
     </div>
 
     <div class="status-bar">
-        <span><span class="dot"></span>Connecté aux relays GunDB</span>
-        <span id="refreshStatus">Mise à jour en temps réel</span>
+        <span><span class="dot"></span><span data-i18n="stats.connected">Connecté aux relays GunDB</span></span>
+        <span id="refreshStatus" data-i18n="stats.live">Mise à jour en temps réel</span>
     </div>
 
     <script>
@@ -178,7 +182,8 @@
         var refreshBtn = document.getElementById('refreshBtn');
 
         refreshBtn.addEventListener('click', function() {
-            refreshStatus.textContent = 'Rafraîchi à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            var locale = I18N.isFr() ? 'fr-FR' : 'en-GB';
+            refreshStatus.textContent = I18N.t('stats.refreshedAt') + ' ' + new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             Object.keys(knownRooms).forEach(refreshRoom);
         });
 
@@ -205,18 +210,17 @@
             var rooms = Object.keys(roomData).filter(function(id) {
                 return (roomData[id].users.length || 0) > 0;
             });
-            countEl.textContent = rooms.length + ' room' + (rooms.length !== 1 ? 's' : '');
+            countEl.textContent = rooms.length + ' ' + I18N.plural('stats.rooms', rooms.length);
 
             if (rooms.length === 0) {
                 if (loading) {
                     listEl.innerHTML = '<div class="empty-state">' +
-                        '<h3>Chargement en cours...</h3>' +
-                        '<p>Recherche des rooms actives sur les relays...</p></div>';
+                        '<h3>' + I18N.t('stats.loadingTitle') + '</h3>' +
+                        '<p>' + I18N.t('stats.loadingBody') + '</p></div>';
                 } else {
                     listEl.innerHTML = '<div class="empty-state">' +
-                        '<h3>Aucune room active</h3>' +
-                        '<p>Les rooms apparaissent ici quand des utilisateurs sont présents.<br>' +
-                        'Ouvre TeamCel et crée ou rejoins une room pour commencer.</p></div>';
+                        '<h3>' + I18N.t('stats.emptyTitle') + '</h3>' +
+                        '<p>' + I18N.t('stats.emptyBody') + '</p></div>';
                 }
                 return;
             }
@@ -235,8 +239,9 @@
                 var id = rooms[i];
                 var data = roomData[id];
                 var userCount = data.users.length || 0;
+                var locale = I18N.isFr() ? 'fr-FR' : 'en-GB';
                 var lastSeen = data.lastSeen
-                    ? new Date(data.lastSeen).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                    ? new Date(data.lastSeen).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
                     : '';
 
                 html += '<div class="room-card">' +
@@ -246,8 +251,8 @@
                     '</div>' +
                     '<div class="room-users">' +
                         '<strong>' + userCount + '</strong>' +
-                        '<span class="label">utilisateur' + (userCount !== 1 ? 's' : '') + '</span>' +
-                        (lastSeen ? '<span class="label" title="Dernière activité">· ' + lastSeen + '</span>' : '') +
+                        '<span class="label">' + I18N.plural('stats.users', userCount) + '</span>' +
+                        (lastSeen ? '<span class="label" title="' + I18N.t('stats.lastActivity') + '">· ' + lastSeen + '</span>' : '') +
                     '</div>' +
                 '</div>';
             }

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.0.20 (2026-08-12)
+
+### Changed
+- **Version affichée** — la version est sortie du logo TeamCel et placée en petit, sous le lien « En savoir plus sur TeamCel » sur la page d'accueil (`.landing-version`).
+- **Version** : `0.0.20`
+
+## 0.0.19 (2026-08-12)
+
+### Added
+- **Internationalisation FR/EN** — nouveau fichier `i18n.js` (dictionnaire FR/EN, détection automatique `navigator.language`, préférence mémorisée dans `localStorage['teamcel-lang']`). L'interface s'affiche en anglais si le navigateur n'est pas en français. Petite bascule FR/EN (`data-i18n-toggle`) ajoutée sur la landing, le header du chat, stats.html et presentation.html.
+- **Pages localisées** — index.html (landing, chat, vibe, toast pseudo, modal partage, impression, bannière de mise à jour + textes dynamiques JS : « Répond à », slogan A4/carte/58mm, mailto de commande), stats.html (header, états, pluriels room(s)/utilisateur(s), dates par locale), presentation.html (toutes les sections).
+- **Pseudos traduits** — listes EN `_adjectivesEn`/`_nounsEn` dans main.js, sélectionnées selon la langue.
+
+### Changed
+- **sw.js** — `i18n.js` (et `presentation.html`) ajoutés au pré-cache ; `CACHE_NAME` passé en `teamcel-v7` pour forcer le rechargement des fichiers modifiés.
+- **Version** : `0.0.19`
+
 ## 0.0.18 (2026-08-12)
 
 ### Fixed
